@@ -1,0 +1,38 @@
+extends layout
+block admin
+    div#editProductPopup
+        #closeBtn close
+        h4 Корегування даних :
+        #editProductWraper
+            input(type='text', placeholder='Ім‘я', id='nameProd')
+            input(type='text', placeholder='Прізвище', id='qtyProd')
+            input(type='text', placeholder='Логін', id='priceProd')
+            input(type='text', placeholder='Email', id='priceProd')
+            input(type='text', placeholder='Пароль', id='priceProd')
+            input(type='submit',  value='Змінити', id='applyEdits')
+    a(href="/home") <До бази продуктів
+    table(id='salesTableList', class="usersTable")
+        thead
+            tr
+                th №
+                th(class='adminTitle') Ім‘я
+                th(class='adminTitle') Прізвище
+                th(class='adminTitle') Логін
+                th(class='adminTitle') Email
+                th(class='adminTitle') Пароль
+                th(class='adminActions') Дії
+        tbody
+            each user, i in users
+                tr
+                    td=i+1
+                    td=user.firstName
+                    td=user.lastName
+                    td=user.login
+                    td=user.email
+                    td(class="userPass")
+                        div(class="pass")=user.password
+                        div(class="showHidePass hidePass")
+                    td(id='adminActions')
+                        input(type='button', id='Edit', name=user._id, value='Edit')
+                        input(type='button', id='Del', name=user._id, value='Delete')
+    a(href="/home") <До бази продуктів

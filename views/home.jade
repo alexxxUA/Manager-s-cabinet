@@ -1,0 +1,75 @@
+﻿extends layout
+block popupEdit
+	div#editProductPopup
+		#closeBtn close
+		h4 Корегування продукту :
+		#editProductWraper
+			input(type='text', placeholder='Назва продукту', id='nameProd')
+			select(id='unitProd')
+				option(value='шт')шт
+				option(value='кг')кг
+				option(value='л')л
+				option(value='м')м
+			input(type='text', placeholder='Кількість', id='qtyProd')
+			input(type='text', placeholder='Ціна', id='priceProd')
+			input(type='submit',  value='Змінити', id='applyEdits')
+block home
+	#leftSide
+		h4#day Сьогодні: #{day}
+		h3#titleLogin
+			span(class="iconUser") Вітаю
+			span#userName #{user}
+			span !
+		if(user == 'admin')
+			h3#adminSettings
+				a(href="/admin", title="settings") Адміністрування
+		div(class="logout")
+			a#logout(href='#') Вихід
+		ul
+			li(class='active')
+				a(href='/home', class='adminLink') База продуктів
+			li
+				a(href='/salesPage', class='salesLink') Продаж
+			li
+				a(href='/report', class='reportLink') Генерація звіту
+
+block products
+	#rightSide
+		block addForm
+			form(action='/addProduct', method='GET', id='addProducForm')
+				h4(id='addProdTitle') Додати продукт до бази
+				input(type='text', name='nameProd', placeholder='Назва товару', id='nameProd')
+				input(type='text', name='qtyProd', placeholder='Кількість', id='qtyProd')
+				input(type='text', name='priceProd', placeholder='Ціна', id='priceProd')
+				select(name='unit', id='unit')
+					option(value='шт') шт
+					option(value='кг') кг
+					option(value='л') л
+					option(value='м') м
+				input(type='submit',  value='Додати')
+		form(action='/editProduct', method='GET', id='productList')
+			h2(class="tableTitle") База всіх продуктів
+			#myTable
+				table(id='tableList', class='tablesorter')
+					thead
+						tr
+							th(id='tableThTitle', class='sort') Назва товару
+							th(id='tableThQty') Кількість
+							th(id='tableThUnit') Один. виміру
+							th(id='tableThPrice') Ціна
+							th(id='tableThCoast') Сумма
+							th(id='tableThActions') Дії
+					tbody
+						each product in productsList
+							tr
+								td(id='tableTitle')=product.title
+								td(id='tableQty')=floorN(product.qty, 2)
+								td(id='tableUnit')=product.unit
+								td(id='tablePrice')=floorN(product.price, 2)
+								td(id='tableCoast')=floorN((product.price*product.qty), 2)
+								td(id='tableActions')
+									input(type='button', id='Edit', name=product.title, value='Edit')
+									input(type='button', id='Del', name=product.title, value='Delete')
+			h4(id='tableListError', style='display:none') База продуктів порожня.
+
+		

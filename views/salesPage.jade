@@ -1,0 +1,103 @@
+﻿extends layout
+block popupEdit
+	div#editProductPopup
+		#closeBtn close
+		h4 Корегування продукту :
+		#editProductWraper
+			input(type='text', placeholder='Назва продукту', id='nameProd', disabled='disabled')
+			input(type='text', placeholder='Кількість', id='qtyProd')
+			input(type='text', placeholder='Ціна', id='priceProd', disabled='disabled')
+			input(type='submit',  value='Змінити', id='applyEditsCheck')
+block home
+	#leftSide
+		h4#day Сьогодні: #{day}
+		h3#titleLogin
+			span(class="iconUser") Вітаю
+			span#userName #{user}
+			span !
+		if(user == 'admin')
+			h3#adminSettings
+				a(href="/admin", title="settings") Адміністрування
+		div(class="logout")
+			a#logout(href='#') Вихід
+		ul
+			li
+				a(href='/home', class='adminLink') База продуктів
+			li(class='active')
+				a(href='/salesPage', class='salesLink') Продаж
+				a(href='#', class='settings') Налаштування
+				#salesSettings(style='display:none')
+					#closeBtn close
+					h2 Налаштування сторінки продажу
+					#settingsContainer
+						a(href='#', class='clearSalesList') Очистити базу продажу
+			li
+				a(href='/report', class='reportLink') Генерація звіту
+
+block products
+	#rightSide
+		div#salesListGroup
+			div#searchProdList
+				ul#salesTitle
+					li.sProdName Назва товару
+					li.sProdQty Кількість
+					li.sProdPrice Ціна
+					li.sProdSumm Сумма
+				div#searchProdFrom
+					input(type='text', placeholder='Назва товару', id='searchProd')
+					input(type='text', placeholder='Кількість', id='searchProdQty')
+					input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
+					input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
+					input(type='button', value='+Чек', id='btnAddList')
+					#searchProdErrorExist
+						span(class="errorArrow")
+						div#text Товар не існує
+					#searchProdErrorExistInCheck
+						span(class="errorArrow")
+						div#text Товар вже додано до чеку
+					#searchProdErrorQty
+						span(class="errorArrow")
+						div#text
+							span В наявності є тільки
+							span(class='availableCount')
+					#searchProdErrorQty2
+						span(class="errorArrow")
+						div#text Введіть кількість
+				div#searchResults(style='display:none')
+					ul
+			div#salesList
+				#checkList(style='display:none')
+					a(href='#', id='btnSell', title='ctr+enter') Продати
+					h2(class="tableTitle") Чек
+					table(id='tableListCheck')
+						thead
+							tr
+								th(id='tableThTitle') Назва товару
+								th(id='tableThQty') Кількість
+								th(id='tableThPrice') Ціна
+								th(id='tableThCoast') Сумма
+								th(id='tableThActions') Дії
+						tbody
+					div#salingsCheck
+						div#salingsValueCheck 0.00
+						div#salingsText Сумма чеку:
+				-var salling = 0;
+				h2(class="tableTitle") Список проданих товарів за сьогодні
+				table(id='salesTableList')
+					thead
+						tr
+							th(id='tableThTitle') Назва товару
+							th(id='tableThQty') Кількість
+							th(id='tableThPrice') Ціна
+							th(id='tableThCoast') Сумма
+					tbody
+						each sale in salesList
+							tr
+								td(id='salesTableTitle')=sale.title
+								td(id='salesTableQty')=floorN(sale.qty, 2)
+								td(id='salesTablePrice')=floorN(sale.price, 2)
+								td(id='salesTableCoast')=sales=floorN(sale.price*sale.qty, 2)
+							-salling = (+salling)+(+sales);
+				div#salings
+					div#salingsValue #{floorN(salling, 2)}
+					div#salingsText Продано на:

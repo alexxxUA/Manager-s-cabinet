@@ -1,0 +1,66 @@
+!!! 5
+html
+	head
+		link(type='text/css', rel='stylesheet', href='css/reset.css')
+		link(type="text/css", rel="stylesheet", href="css/dp/jquery-ui-1.8.24.custom.css")
+		link(type='text/css', rel='stylesheet', href='css/style.css')
+		link(type='text/css', rel='stylesheet', href='css/print.css', media="print")
+		//if IE
+			link(type='text/css', rel='stylesheet', href='css/ie.css')
+		//if IE 7
+			link(type='text/css', rel='stylesheet', href='css/ie7.css')
+		link(rel="shortcut icon", href="../img/favicon.ico")
+		title Ведення товару малого підприємництва(mng-prod)
+		meta(name="google-site-verification", content="y5foc4lOYabrfrRT0YOxzaw4ordJtDzLRUL0hHVy2i4")
+		meta(charset="UTF-8", name="Keywords", content="http://mng-prod.rs.af.cm, mng-prod.rs.af.cm, maintaining products, mng-prod,managing products, підприємництво, база продуктов, база продуктів, managing products, managing, ведення товарів малого підприємництва, ведення товарів середнього підприємництва, товар,введение, учет, продукт, база, продажа, отчет, введення, облік, продукт, база, продаж, звіт, product introduction, accounting, product base, sales, report")
+		meta(charset="UTF-8", name="Description", content="Безкоштовний сервіс для ведення продажу товарів для малого та середнього підприємництва. http://mng-prod.rs.af.cm, mng-prod.rs.af.cm, maintaining products, mng-prod,managing products, підприємництво, база продуктов, база продуктів, managing products, managing, ведення товарів малого підприємництва, ведення товарів середнього підприємництва, товар,введение, учет, продукт, база, продажа, отчет, введення, облік, продукт, база, продаж, звіт, product introduction, accounting, product base, sales, report, ведення складу, онлайн склад, ведение склада")
+		meta(name="author", content="Alexey Vasin")
+		meta(name="revisit", content="1 days")
+		meta(name="revisit-after", content="1 days")
+		meta(name='yandex-verification', content='6bfa0fdbd4673e28')
+	body
+		-//Flour number
+		-function floorN(x, n){
+			-var numb = Number(x);
+			-return numb.toFixed(n);
+		-}
+		#section-container
+			#header
+				h1
+					a(href="/", title="Головна") ведення товару
+				a(href="/aboutUS", title="опис сервісу", class="aboutUS")
+			#content(class='clearfix')
+				block aboutUS
+				block error404
+				block home
+				block admin
+				block register
+				block login
+					block products
+					block salesPage
+					block report
+		#footer
+			#AdminContacts
+				h4 Developed by : Alexey Vasin
+				a(href="mailto:product.db.helper@gmail.com", class="mailContact") Підтримка
+				h5 product.db.helper@gmail.com
+		block popupEdit
+		block forgotPass
+		#modalWindow
+		a(id="scrollTop", href="#", title="To top", style="display:none") To top
+		#loading(style="display:none;")
+			img(src="img/ajax-loader1.gif", width="32", height="32", alt="loader")
+		#errorAjax(style="display:none;")
+			span Помилка,
+			br
+			span спробуйте ще,
+			br
+			span або перезавантажте сторінку.
+		block scripts
+			#js
+				script(src='js/jquery-1.8.2.min.js')
+				script(src='js/jquery_cookie.js')
+				script(src='js/jquery-ui_datepicker.js')
+				script(src='js/jquery.tablesorter.js')
+				script(src='js/placeholder.js')
+				script(src='js/js.js')

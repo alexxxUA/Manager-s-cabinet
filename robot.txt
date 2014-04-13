@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /views
+Disallow: /static
+Sitemap: http://mng-prod.rs.af.cm/sitemap.xml

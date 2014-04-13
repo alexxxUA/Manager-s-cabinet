@@ -1,0 +1,49 @@
+﻿extends layout
+block home
+	#leftSide
+		h4#day Сьогодні: #{day}
+		h3#titleLogin
+			span(class="iconUser") Вітаю
+			span#userName #{user}
+			span !
+		if(user == 'admin')
+			h3#adminSettings
+				a(href="/admin", title="settings") Адміністрування
+		div(class="logout")
+			a#logout(href='#') Вихід
+		ul
+			li
+				a(href='/home', class='adminLink') База продуктів
+			li
+				a(href='/salesPage', class='salesLink') Продаж
+			li(class='active')
+				a(href='/report', class='reportLink') Генерація звіту
+
+block products
+	#rightSide
+		div#getReport
+			h2(class="tableTitle") Генерація звіту по вибраним датам
+			h2(class="reportTitle", style="display:none") Звіт по вибраними датам:
+			div#getReportForm(class='clearfix')
+				h3
+					span Звіт
+					strong від:
+				input#datepicker
+				h3 по:
+				input#datepicker2
+				input(type='submit', id='generateReport', value='Згенерувати')
+				a(id="clearReportList", href="#", title="Очистити") Очистити
+				a(id="print", href="javascript:window.print();", title="Печать") Печать
+			div#errorReport
+			div#reportList(style='display:none')
+				table
+					thead
+						tr
+							th(id='tableThTitle') Назва товару
+							th(id='tableThQty') Кількість
+							th(id='tableThPrice') Ціна
+							th(id='tableThCoast') Сумма
+					tbody
+				div#salings
+					div#reportSumm
+					div#salingsText Загальна сума:
