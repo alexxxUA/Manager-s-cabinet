@@ -5,7 +5,9 @@
 	fs 			= require("fs"),
 	mime 		= require('mime');
 
-var mongo;
+var mongo,
+	port = 8888;
+	
 app.configure('development', function(){
     mongo = {
         "hostname":"localhost",
@@ -473,4 +475,5 @@ app.get('*', function(req, res){
 });
 
 //listen on localhost 8888
-app.listen(8888);
+console.log('Server started on port'+ port);
+app.listen(port);
