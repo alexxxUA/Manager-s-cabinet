@@ -3,7 +3,8 @@
 	app			= express(),
 	email   	= require("emailjs"),
 	fs 			= require("fs"),
-	mime 		= require('mime');
+	mime 		= require('mime'),
+	mongodb     = require('mongodb');
 
 var mongo,
 	port = 8888;
@@ -32,12 +33,9 @@ var generate_mongo_url = function(obj){
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 }
-var mongourl = generate_mongo_url(mongo);
-
-var ObjectID = require('mongodb').ObjectID;
-
-//GLOBAL VARIABLES
-var userID = '';
+var mongourl = generate_mongo_url(mongo),
+	ObjectID = require('mongodb').ObjectID,
+	userID = '';
 
 //set path to the views (template) directory
 app.set('views', __dirname + '/views');
@@ -441,13 +439,51 @@ app.get('/clearSalesList', function(req, res){
 	})
 });
 
+var cMongo = function(dbName, callback){
+	mongodb.connect(mongourl, function(err, db){
+		db.collection(dbName, function(err, collection){
+			callback(err, collection);
+		});
+	});
+}
+
+
 //Clients page
 app.get('/clients', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
 		res.redirect('/');
 
-	
+	cMongo('clients', function(err, col){
+		col.find().toArray(function(err, results){
+			//console.log(results);
+			res.render('clients.jade', {
+				clients: results,
+				user : req.cookies.login,
+				day : req.cookies.day
+			});
+		});
 
+	});
+});
+
+//Add client
+app.get('/addClient', function(req, res){
+	if(typeof(req.cookies.userID) == 'undefined')
+		res.redirect('/');
+	
+	var client = {
+		firstName: req.query.firstName,
+		lastName: req.query.lastName,
+		email: req.query.email,
+		birthDay: req.query.birthDay,
+		tel: req.query.tel,
+		userID : req.cookies.userID
+	}
+
+	cMongo('clients', function(err, col){
+		col.insert(client);
+		res.send(req.query);
+	});
 });
 
 app.get('/aboutUS', function(req, res){
@@ -475,5 +511,5 @@ app.get('*', function(req, res){
 });
 
 //listen on localhost 8888
-console.log('Server started on port'+ port);
+console.log('Server started on port: '+ port);
 app.listen(port);

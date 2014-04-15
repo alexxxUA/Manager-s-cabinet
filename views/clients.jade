@@ -1,0 +1,26 @@
+extends layout
+block home
+	#leftSide
+		h4#day Сьогодні: #{day}
+		h3#titleLogin
+			span(class="iconUser") Вітаю
+			span#userName #{user}
+			span !
+		if(user == 'admin')
+			h3#adminSettings
+				a(href="/admin", title="settings") Адміністрування
+		div(class="logout")
+			a#logout(href='#') Вихід
+		ul
+			li
+				a(href='/home', class='adminLink') База продуктів
+			li(class='active')
+				a(href='/clients', class='clientLink') База клієнтів
+			li
+				a(href='/salesPage', class='salesLink') Продаж
+			li
+				a(href='/report', class='reportLink') Генерація звіту
+
+block mainContent
+	#rightSide
+		include addClient

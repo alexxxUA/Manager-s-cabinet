@@ -1,0 +1,25 @@
+div(class='addClientWrap')
+	form(action='/addClient', ajax='true', ajax-callback='clientAdded')
+		table(class='table')
+			thead
+				tr
+					th Ім‘я
+					th Фамілія
+					th День народження
+					th Email
+					th Телефон
+					th
+			tbody
+				tr
+					td(class='ws-field')
+						input(name='firstNAme', type='text', placeholder='Ім‘я', class='inputNoramal', data-validate-type='notEmpty')
+					td(class='ws-field')
+						input(name='lastName', type='text', placeholder='Фамілія', class='inputNoramal', data-validate-type='notEmpty')
+					td(class='ws-field')
+						input(name='birthday', type='text', placeholder='День народження', class='inputSmall', data-validate-type='')
+					td(class='ws-field')
+						input(name='email', type='text', placeholder='Email', class='inputSmall', data-validate-type='email')
+					td(class='ws-field')
+						input(name='tel', type='text', placeholder='Телефон', class='inputNoramal', data-validate-type='notEmpty')
+					td(class='ws-field')
+						input(type='submit', value='Додати', class='inputNoramal', data-validate-type='')	

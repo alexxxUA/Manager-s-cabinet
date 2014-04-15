@@ -36,9 +36,11 @@ html
 				block admin
 				block register
 				block login
-					block products
-					block salesPage
-					block report
+				block products
+				block salesPage
+				block report
+				block leftSide
+				block mainContent
 		#footer
 			#AdminContacts
 				h4 Developed by : Alexey Vasin
@@ -56,8 +58,8 @@ html
 			span спробуйте ще,
 			br
 			span або перезавантажте сторінку.
-		block scripts
 			#js
+				block scripts
 				script(src='js/jquery-1.8.2.min.js')
 				script(src='js/jquery_cookie.js')
 				script(src='js/jquery-ui_datepicker.js')
