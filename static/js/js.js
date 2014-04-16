@@ -995,7 +995,16 @@
 		var $form = $(this),
 			formAction = $form.attr('action'),
 			formData = $form.serialize(),
-			formCallback = $form.attr('ajax-callback');
+			formSuccess = $form.attr('ajax-success'),
+			formError = $form.attr('ajax-success');
+
+		$form.find('[data-validate-type]').trigger('focusout');
+					
+		var formErrors = $form.find('.data-error');
+		if(formErrors.length > 0){
+			console.log('error');
+			return false;
+		}
 
 		$.ajax({
 			type: "GET",
@@ -1006,18 +1015,48 @@
 			},
 			success: function(request) {
 				$('#loading').css('display', 'none');
-				executeFunctionByName(formCallback, window, request);
+				if(formSuccess.length)
+					executeFunctionByName(formSuccess, window, request, $form);
 			},
 			error: function(){
+				if(formError.length)
+					executeFunctionByName(formError, window, request, $form);
 				$('#loading').css('display', 'none');
 				$('#errorAjax').css('display', 'block');
 			}
 		});
 	});
 
-	window.clientAdded = function (request){
-		console.log(request);
-	}
+	//Ajax loader
+	// var loader = {
+	// 	loaderSelector: '#loading',
+	// 	errorSelector: '#errorAjax',
+	// 	getPos: function (e){
+	// 		e.preventDefault();
+	// 		var yPosLoad = e.pageY+7,
+	// 			xPosLoad = e.pageX+7;
+	// 		$loadingItem.css({'top' : yPosLoad+7, 'left' : xPosLoad+7, 'display' : 'block'});
+	// 	},
+	// 	on: function(){
+	// 		var obj = this;
+	// 		$(window).on('mousemove', function(e){
+	// 			obj.getPos.apply(obj, e);
+	// 		});
+	// 	},
+	// 	off: function(){
+	// 		$(window).unbind('mousemove');
+	// 	}
+	// }
+
+	//Form handlers
+	$.extend(window, {
+		removeLineItem: function(request, $this){
+			$this.closest('.line-item').remove();
+		},
+		clientAdded: function (request){
+			console.log(request);
+		}
+	});
 
 
 })(jQuery);

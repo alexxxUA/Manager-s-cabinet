@@ -111,6 +111,15 @@ body{
 	height: 100%;
 	font-size: 14px;
 }
+.data-error input[name],
+.data-error select[name],
+.data-error textarea[name]{
+    border-color: red;
+}
+.data-error .errorMessage{
+    display: block;
+    color: #FF9B9B;
+}
 #header{
 	padding: 20px 0 50px 0;
 	text-align:center;

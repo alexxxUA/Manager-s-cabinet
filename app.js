@@ -33,6 +33,15 @@ var generate_mongo_url = function(obj){
         return "mongodb://" + obj.hostname + ":" + obj.port + "/" + obj.db;
     }
 }
+
+var cMongo = function(dbName, callback){
+	mongodb.connect(mongourl, function(err, db){
+		db.collection(dbName, function(err, collection){
+			callback(err, collection);
+		});
+	});
+}
+
 var mongourl = generate_mongo_url(mongo),
 	ObjectID = require('mongodb').ObjectID,
 	userID = '';
@@ -439,15 +448,6 @@ app.get('/clearSalesList', function(req, res){
 	})
 });
 
-var cMongo = function(dbName, callback){
-	mongodb.connect(mongourl, function(err, db){
-		db.collection(dbName, function(err, collection){
-			callback(err, collection);
-		});
-	});
-}
-
-
 //Clients page
 app.get('/clients', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
@@ -483,6 +483,22 @@ app.get('/addClient', function(req, res){
 	cMongo('clients', function(err, col){
 		col.insert(client);
 		res.send(req.query);
+	});
+});
+
+//Remove Client
+app.get('/removeClient', function(req, res){
+	var userID = req.cookies.userID;
+	if(typeof userID == 'undefined')
+		res.redirect('/');
+	cMongo('clients', function(err, col){
+		col.remove({_id : ObjectID(req.query.clienId)}, function(err, removed){
+			if(err){
+				console.log(err);
+				res.send('Client not find');				
+			}
+			res.send('Success');
+		});
 	});
 });
 

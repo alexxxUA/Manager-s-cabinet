@@ -1,0 +1,23 @@
+div(class="clientList")
+    table(id='salesTableList', class="usersTable")
+            thead
+                tr
+                    th Ім‘я
+                    th Фамілія
+                    th День народження
+                    th Email
+                    th Телефон
+                    th(class='actionBtnsTh') Дії
+            tbody
+                each client, i in clients
+                    tr(class='line-item')
+                        td=client.firstName
+                        td=client.lastName
+                        td=client.birthDay
+                        td=client.email
+                        td=client.tel
+                        td(class='actionBtnsTd')
+                            a(href='/editClient', class='edit', clientId=client._id) Edit
+                            form(action='/removeClient', ajax='true', ajax-success='removeLineItem')
+                                input(type='hidden', name='clienId', value=client._id)
+                                input(type='submit', class='del', value='Del')
