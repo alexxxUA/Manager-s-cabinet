@@ -6,7 +6,7 @@
 	mime 		= require('mime'),
 	mongodb     = require('mongodb');
 
-var mongo,
+var mongo = {},
 	port = 8888;
 	
 app.configure('development', function(){
@@ -488,7 +488,8 @@ app.get('/addClient', function(req, res){
 
 app.get('/aboutUS', function(req, res){
 	res.render('aboutUS.jade');
-})
+});
+
 //Page 404
 app.get('/error404', function(req, res){
 	res.render('error404.jade', {'title' : 'Error 404'});
