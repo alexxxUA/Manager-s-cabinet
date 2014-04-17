@@ -3,7 +3,6 @@ div(class="clientList")
             thead
                 tr
                     th Ім‘я
-                    th Фамілія
                     th День народження
                     th Email
                     th Телефон
@@ -11,13 +10,17 @@ div(class="clientList")
             tbody
                 each client, i in clients
                     tr(class='line-item')
-                        td=client.firstName
-                        td=client.lastName
-                        td=client.birthDay
-                        td=client.email
-                        td=client.tel
+                        td
+                            span(data-name='firstName', data-val=client.firstName )=client.firstName 
+                            span(data-name='lastName', data-val=client.lastName)=client.lastName
+                        td
+                            span(data-name='birthday', data-val=client.birthday)=client.birthday
+                        td
+                            span(data-name='email', data-val=client.email)=client.email
+                        td
+                            span(data-name='tel', data-val=client.tel)=client.tel
                         td(class='actionBtnsTd')
-                            a(href='/editClient', class='edit', clientId=client._id) Edit
+                            a(href='/editClient', class='edit', data-template='editClientTemplate', clientid=client._id) Edit
                             form(action='/removeClient', ajax='true', ajax-success='removeLineItem')
                                 input(type='hidden', name='clienId', value=client._id)
                                 input(type='submit', class='del', value='Del')

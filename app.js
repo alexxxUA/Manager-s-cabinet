@@ -455,7 +455,7 @@ app.get('/clients', function(req, res){
 
 	cMongo('clients', function(err, col){
 		col.find().toArray(function(err, results){
-			//console.log(results);
+			console.log(results);
 			res.render('clients.jade', {
 				clients: results,
 				user : req.cookies.login,
@@ -475,7 +475,7 @@ app.get('/addClient', function(req, res){
 		firstName: req.query.firstName,
 		lastName: req.query.lastName,
 		email: req.query.email,
-		birthDay: req.query.birthDay,
+		birthday: req.query.birthday,
 		tel: req.query.tel,
 		userID : req.cookies.userID
 	}

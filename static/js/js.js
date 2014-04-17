@@ -1027,6 +1027,12 @@
 		});
 	});
 
+	//Loading edit window
+	$(document).delegate('.edit', 'click', function(e){
+		
+	});
+
+
 	//Ajax loader
 	// var loader = {
 	// 	loaderSelector: '#loading',
@@ -1048,7 +1054,7 @@
 	// 	}
 	// }
 
-	//Form handlers
+	//Window scoupe
 	$.extend(window, {
 		removeLineItem: function(request, $this){
 			$this.closest('.line-item').remove();
