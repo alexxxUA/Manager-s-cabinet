@@ -1027,11 +1027,17 @@
 		});
 	});
 
+	//Close window
+	$(document).delegate('.closeBtn', 'click', function(e){
+		$(this).closest('.dialog').remove();
+	});
+
 	//Loading edit window
 	$(document).delegate('.edit', 'click', function(e){
 		e.preventDefault();
 
-		var $editLine = $(this).closest('.line-item'),
+		var $modals = $('#modals'),
+			$editLine = $(this).closest('.line-item'),
 			$params = $editLine.find('[data-name]'), 
 			clientId = $editLine.attr('id'),
 			data = {};
@@ -1057,8 +1063,7 @@
 				data[dName].val = '';
 		});
 
-		console.log(templates.esditClient()(data));
-
+		$modals.append( templates.esditClient()(data) );
 	});
 
 	

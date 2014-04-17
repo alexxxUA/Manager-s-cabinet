@@ -1,6 +1,7 @@
 var templates = {
 	esditClient: function(){
-		return _.template("<div='editPopup' clientid='<%= clientid %>'>"+
+		return _.template("<div class='dialog editPopup' clientid='<%= clientid %>'>"+
+			"<div class='closeBtn'>close</div>"+
 			"<form action='/editClient' ajax='true' ajax-success='clientEdited'>"+
 			 	"<div class='ws-field'>"+
 			 		"<label><%= firstName.label %></label>"+
@@ -21,6 +22,9 @@ var templates = {
 			 	"<div class='ws-field'>"+
 			 		"<label><%= tel.label %></label>"+
 			 		"<input type='text' value='<%= tel.val %>' />"+
+			 	"</div>"+
+			 	"<div class='ws-field'>"+
+			 		"<input type='submit' value='Змінити' />"+
 			 	"</div>"+
 			"</form>"+
 		"</div>");
