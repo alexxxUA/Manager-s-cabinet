@@ -9,16 +9,17 @@ div(class="clientList")
                     th(class='actionBtnsTh') Дії
             tbody
                 each client, i in clients
-                    tr(class='line-item')
+                    tr(class='line-item', id=client._id)
                         td
-                            span(data-name='firstName', data-val=client.firstName )=client.firstName 
-                            span(data-name='lastName', data-val=client.lastName)=client.lastName
+                            span(data-name='firstName', data-val=client.firstName, data-label='Ім‘я') #{client.firstName}
+                                | 
+                            span(data-name='lastName', data-val=client.lastName, data-label='Фамілія') #{client.lastName}
                         td
-                            span(data-name='birthday', data-val=client.birthday)=client.birthday
+                            span(data-name='birthday', data-val=client.birthday, data-label='День народження')=client.birthday
                         td
-                            span(data-name='email', data-val=client.email)=client.email
+                            span(data-name='email', data-val=client.email, data-label='Email')=client.email
                         td
-                            span(data-name='tel', data-val=client.tel)=client.tel
+                            span(data-name='tel', data-val=client.tel, data-label='Телефон')=client.tel
                         td(class='actionBtnsTd')
                             a(href='/editClient', class='edit', data-template='editClientTemplate', clientid=client._id) Edit
                             form(action='/removeClient', ajax='true', ajax-success='removeLineItem')

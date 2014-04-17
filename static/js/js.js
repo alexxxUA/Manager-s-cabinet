@@ -1,4 +1,4 @@
-﻿(function( $, undefined ) {
+(function( $, undefined ) {
 	"use strict"
 	// Datepicker
 	$("#datepicker").datepicker({
@@ -1029,10 +1029,39 @@
 
 	//Loading edit window
 	$(document).delegate('.edit', 'click', function(e){
-		
+		e.preventDefault();
+
+		var $editLine = $(this).closest('.line-item'),
+			$params = $editLine.find('[data-name]'), 
+			clientId = $editLine.attr('id'),
+			data = {};
+
+		data.clientid = clientId;
+
+		$params.each(function(){
+			var $this = $(this),
+				dName = $this.data('name'),
+				dLabel = $this.data('label'),
+				dVal = $this.data('val');
+			
+			data[dName] = {};
+			
+			if(typeof dLabel !== 'undefined')
+				data[dName].label = dLabel;
+			else
+				data[dName].label = '';
+
+			if(typeof dVal !== 'undefined')
+				data[dName].val = dVal;
+			else
+				data[dName].val = '';
+		});
+
+		console.log(templates.esditClient()(data));
+
 	});
 
-
+	
 	//Ajax loader
 	// var loader = {
 	// 	loaderSelector: '#loading',

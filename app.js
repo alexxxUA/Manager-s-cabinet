@@ -455,7 +455,7 @@ app.get('/clients', function(req, res){
 
 	cMongo('clients', function(err, col){
 		col.find().toArray(function(err, results){
-			console.log(results);
+			//console.log(results);
 			res.render('clients.jade', {
 				clients: results,
 				user : req.cookies.login,
