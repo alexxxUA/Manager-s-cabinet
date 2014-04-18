@@ -684,6 +684,8 @@
 
 	//Close modal and poups
 	function closeModal(){
+		$('#modals').text('');
+
 		$('#editProductPopup, #forgotPassPoup, #salesSettings').slideUp(300);
 		$('#searchResults, #modalWindow, #forgotSuccess').css('display', 'none');
 		$('#tempEditProd').attr('id', '');
@@ -966,6 +968,28 @@
 		notEmpty: /.+/,
 		email: /^\b[0-9A-Z_\.]+@[0-9A-Z]+\.[A-Z]{2,4}\b$/i
 	};
+
+	var Dialog = {
+		modalBg: '#modalWindow',
+		dialogCont: '.modals',
+		closeBtn: '.closeBtn',
+		init: function(){
+			var obj = this;
+			$(document).delegate(obj.modalBg, 'click', $.proxy(obj, 'hide'));
+			$(document).delegate(obj.closeBtn, 'click', $.proxy(obj, 'hide'));
+		},
+		show: function($dialog){
+			$(this.modalBg).css({'top': '0', 'left': '0'}).show();
+			$(this.dialogCont).append($dialog);
+		},
+		hide: function(){
+			$(this.modalBg).hide().css({'top': '-100%', 'left': '-100%'});
+			$(this.dialogCont).text('');
+		}
+	}
+
+	Dialog.init();
+
 	$(document).delegate('[data-validate-type]', 'focusout', function(){
 		var $this = $(this),
 			validatorType = $this.data('validate-type'),
@@ -1027,16 +1051,13 @@
 		});
 	});
 
-	//Close window
-	$(document).delegate('.closeBtn', 'click', function(e){
-		$(this).closest('.dialog').remove();
-	});
-
 	//Loading edit window
 	$(document).delegate('.edit', 'click', function(e){
 		e.preventDefault();
 
-		var $modals = $('#modals'),
+		var yPos = e.pageY-15,
+			xPos = e.pageX,
+			$modals = $('#modals'),
 			$editLine = $(this).closest('.line-item'),
 			$params = $editLine.find('[data-name]'), 
 			clientId = $editLine.attr('id'),
@@ -1063,7 +1084,9 @@
 				data[dName].val = '';
 		});
 
-		$modals.append( templates.esditClient()(data) );
+		var $dialog = $( templates.esditClient()(data) ).css({'top': yPos, left: xPos});
+
+		Dialog.show($dialog);
 	});
 
 	

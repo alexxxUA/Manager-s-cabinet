@@ -355,8 +355,9 @@ td#tableThCoast,
 #tableUnit,
 #salesTableCoast{text-align:center;}
 /*Edit product popup*/
-#editProductPopup{
-	display:none;
+#editProductPopup,
+.dialog{
+	/* display:none; */
 	position: absolute;
 	border: 1px solid white;
 	padding: 20px;
@@ -365,6 +366,9 @@ td#tableThCoast,
 	color: white;
 	border-radius: 20px;
 	z-index:99;
+}
+.dialog{
+	display: block;
 }
 #editProductPopup #applyEdits{
 	background: #47D533;
