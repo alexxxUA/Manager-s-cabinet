@@ -1058,12 +1058,12 @@
 		var yPos = e.pageY-15,
 			xPos = e.pageX,
 			$modals = $('#modals'),
-			$editLine = $(this).closest('.line-item'),
+			$editLine = $(this).closest('.d-line-item'),
 			$params = $editLine.find('[data-name]'), 
 			clientId = $editLine.attr('id'),
 			data = {};
 
-		data.clientid = clientId;
+		data.clientId = clientId;
 
 		$params.each(function(){
 			var $this = $(this),
@@ -1089,6 +1089,17 @@
 		Dialog.show($dialog);
 	});
 
+	function updateDataLineItem($lineItem, dataObj){
+		var $params = $lineItem.find('[data-name]');
+
+		$params.each(function(){
+			var $this = $(this),
+				dName = $this.data('name');
+			if(typeof dataObj[dName] !== 'undefined')
+				$this.text(dataObj[dName]);
+		});
+	}
+
 	
 	//Ajax loader
 	// var loader = {
@@ -1113,11 +1124,20 @@
 
 	//Window scoupe
 	$.extend(window, {
-		removeLineItem: function(request, $this){
-			$this.closest('.line-item').remove();
+		removeLineItem: function(request, $form){
+			$form.closest('.d-line-item').remove();
 		},
-		clientAdded: function (request){
-			console.log(request);
+		clientAdded: function (request, $form){
+			var $tbody = $('.usersTable').find('tbody');
+
+			$tbody.append( $( templates.newClient()(request[0]) ) );	
+		},
+		clientEdited: function(request, $form){
+			var clientId = $form.closest('.editPopup').attr('clientid'),
+				$updateLine = $('.d-line-item#'+ clientId);
+
+			updateDataLineItem($updateLine, request);
+			Dialog.hide();
 		}
 	});
 

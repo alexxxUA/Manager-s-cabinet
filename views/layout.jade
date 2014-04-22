@@ -1,15 +1,15 @@
 !!! 5
 html
 	head
-		link(type='text/css', rel='stylesheet', href='css/reset.css')
-		link(type="text/css", rel="stylesheet", href="css/dp/jquery-ui-1.8.24.custom.css")
-		link(type='text/css', rel='stylesheet', href='css/style.css')
-		link(type='text/css', rel='stylesheet', href='css/print.css', media="print")
+		link(type='text/css', rel='stylesheet', href='/css/reset.css')
+		link(type="text/css", rel="stylesheet", href="/css/dp/jquery-ui-1.8.24.custom.css")
+		link(type='text/css', rel='stylesheet', href='/css/style.css')
+		link(type='text/css', rel='stylesheet', href='/css/print.css', media="print")
 		//if IE
 			link(type='text/css', rel='stylesheet', href='css/ie.css')
 		//if IE 7
 			link(type='text/css', rel='stylesheet', href='css/ie7.css')
-		link(rel="shortcut icon", href="../img/favicon.ico")
+		link(rel="shortcut icon", href="/img/favicon.ico")
 		title Ведення товару малого підприємництва(mng-prod)
 		meta(name="google-site-verification", content="y5foc4lOYabrfrRT0YOxzaw4ordJtDzLRUL0hHVy2i4")
 		meta(charset="UTF-8", name="Keywords", content="http://mng-prod.rs.af.cm, mng-prod.rs.af.cm, maintaining products, mng-prod,managing products, підприємництво, база продуктов, база продуктів, managing products, managing, ведення товарів малого підприємництва, ведення товарів середнього підприємництва, товар,введение, учет, продукт, база, продажа, отчет, введення, облік, продукт, база, продаж, звіт, product introduction, accounting, product base, sales, report")
@@ -52,20 +52,19 @@ html
 		#modalWindow
 		a(id="scrollTop", href="#", title="To top", style="display:none") To top
 		#loading(style="display:none;")
-			img(src="img/ajax-loader1.gif", width="32", height="32", alt="loader")
+			img(src="/img/ajax-loader1.gif", width="32", height="32", alt="loader")
 		#errorAjax(style="display:none;")
 			span Помилка,
 			br
 			span спробуйте ще,
 			br
 			span або перезавантажте сторінку.
-			#js
-				block scripts
-				script(src='js/jquery-1.8.2.min.js')
-				script(src='js/jquery_cookie.js')
-				script(src='js/jquery-ui_datepicker.js')
-				script(src='js/jquery.tablesorter.js')
-				script(src='js/placeholder.js')
-				script(src='js/underscore-min.js')
-				script(src='js/_templates.js')
-				script(src='js/js.js')
+		block scripts
+		script(src='/js/jquery-1.8.2.min.js')
+		script(src='/js/jquery_cookie.js')
+		script(src='/js/jquery-ui_datepicker.js')
+		script(src='/js/jquery.tablesorter.js')
+		script(src='/js/placeholder.js')
+		script(src='/js/underscore-min.js')
+		script(src='/js/_templates.js')
+		script(src='/js/js.js')

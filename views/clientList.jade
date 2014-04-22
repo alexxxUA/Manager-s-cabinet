@@ -9,11 +9,12 @@ div(class="clientList")
                     th(class='actionBtnsTh') Дії
             tbody
                 each client, i in clients
-                    tr(class='line-item', id=client._id)
+                    tr(class='d-line-item', id=client._id)
                         td
-                            span(data-name='firstName', data-val=client.firstName, data-label='Ім‘я') #{client.firstName}
-                                | 
-                            span(data-name='lastName', data-val=client.lastName, data-label='Фамілія') #{client.lastName}
+                            a(href='/client/#{client._id}')
+                                span(data-name='firstName', data-val=client.firstName, data-label='Ім‘я') #{client.firstName}
+                                span  
+                                span(data-name='lastName', data-val=client.lastName, data-label='Прізвище') #{client.lastName}
                         td
                             span(data-name='birthday', data-val=client.birthday, data-label='День народження')=client.birthday
                         td
@@ -21,7 +22,7 @@ div(class="clientList")
                         td
                             span(data-name='tel', data-val=client.tel, data-label='Телефон')=client.tel
                         td(class='actionBtnsTd')
-                            a(href='/editClient', class='edit', data-template='editClientTemplate', clientid=client._id) Edit
+                            a(href='/editClient', class='edit', data-template='editClientTemplate', clientid=client._id) Змінити
                             form(action='/removeClient', ajax='true', ajax-success='removeLineItem')
-                                input(type='hidden', name='clienId', value=client._id)
-                                input(type='submit', class='del', value='Del')
+                                input(type='hidden', name='clientId', value=client._id)
+                                input(type='submit', class='del', value='Видалити')
