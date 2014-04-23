@@ -463,8 +463,6 @@ td#tableThCoast,
 }
 #salesTitle .sProdQty,
 #searchProdList #searchProdQty{width:63px;}
-#searchProdList #searchProdSumm,
-#searchProdList .sProdSumm{border-right: 1px solid #69CCC8;}
 .sProdSumm{border-radius:0 5px 0 0;}
 #searchProdList #searchProd,
 #searchProdList .sProdName{
@@ -472,9 +470,7 @@ td#tableThCoast,
 	text-align:left;
 }
 #btnAddList{
-	position: absolute;
-	left: 385px;
-	top: 2px;
+	float: left;
 	min-height: 50px;
 	text-transform: uppercase;
 	color: white;
@@ -900,4 +896,16 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 #aboutUS ul li{
 	list-style: circle;
 	margin: 0 0 0 45px;
+}
+
+.saleForm input{
+	width: 100% !important;
+}
+.saleForm tr td{
+	border: none !important;
+	padding: 0 !important;
+}
+.saleForm{
+	width: 80%;
+	float: left;
 }

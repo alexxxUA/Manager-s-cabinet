@@ -40,53 +40,43 @@ block products
 	#rightSide
 		div#salesListGroup
 			div#searchProdList
-				table(class="usersTable salesTableList")
-                    thead
-                        tr
-                            th.sProdName Назва товару
-                            th.sProdQty Кількість
-                            th.sProdPrice Ціна
-                            th.sProdSumm Сумма
-                    tbody
-                            tr(class='d-line-item', id='searchProdFrom')
-                                td
-                                   input(type='text', placeholder='Назва товару', id='searchProd') 
-                                td
-                                    input(type='text', placeholder='Кількість', id='searchProdQty')
-                                td
-                                    input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-                                td
-                                    input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
-                                td
-                                    input(type='button', value='+Чек', id='btnAddList')
-				
-                ul#salesTitle
-					li.sProdName Назва товару
-					li.sProdQty Кількість
-					li.sProdPrice Ціна
-					li.sProdSumm Сумма
-				div#searchProdFrom
-					input(type='text', placeholder='Назва товару', id='searchProd')
-					input(type='text', placeholder='Кількість', id='searchProdQty')
-					input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-					input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
-					input(type='button', value='+Чек', id='btnAddList')
-					#searchProdErrorExist
-						span(class="errorArrow")
-						div#text Товар не існує
-					#searchProdErrorExistInCheck
-						span(class="errorArrow")
-						div#text Товар вже додано до чеку
-					#searchProdErrorQty
-						span(class="errorArrow")
-						div#text
-							span В наявності є тільки
-							span(class='availableCount')
-					#searchProdErrorQty2
-						span(class="errorArrow")
-						div#text Введіть кількість
-				div#searchResults(style='display:none')
-					ul
+				table(class="saleForm salesTableList")
+					thead
+						tr
+						th.sProdName Назва товару
+						th.sProdQty Кількість
+						th.sProdPrice Ціна
+						th.sProdSumm Сумма
+					tbody
+						tr(class='d-line-item', id='searchProdFrom')
+							td
+								input(type='text', placeholder='Назва товару', id='searchProd')
+								div#searchResults(style='display:none')
+									ul
+								div.helpMessages
+									#searchProdErrorExist
+										span(class="errorArrow")
+										div#text Товар не існує
+									#searchProdErrorExistInCheck
+										span(class="errorArrow")
+										div#text Товар вже додано до чеку
+									#searchProdErrorQty
+										span(class="errorArrow")
+										div#text
+										span В наявності є тільки
+										span(class='availableCount')
+									#searchProdErrorQty2
+										span(class="errorArrow")
+										div#text Введіть кількість
+							td
+								input(type='text', placeholder='Кількість', id='searchProdQty')
+							td
+								input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
+							td
+								input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
+				input(type='button', value='+Чек', id='btnAddList')
+			
+
 			div#salesList
 				#checkList(style='display:none')
 					a(href='#', id='btnSell', title='ctr+enter') Продати
