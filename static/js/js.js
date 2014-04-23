@@ -171,19 +171,25 @@
 	//Function chose searched item
 	function selectSearched(){
 		var selectedAttr = $('#searchResults .selected').attr('id');
-		if(selectedAttr == 'available'){
-			$('#searchResults').css('display', 'none');
-			var	searchChosenTitle = $('#searchResults .selected .searchProdNAme').text(),
-				searchChosenPrice = $('#searchResults .selected').attr('price'),
-				searchChosenMaxQty = $('#searchResults .selected').attr('maxQty');
-			$('#searchProd').val(searchChosenTitle).attr('maxQty', searchChosenMaxQty);
-			$('#searchProdPrice').val(searchChosenPrice);
-			$('#searchProdQty, #searchProdSumm').val('');
-			$('#searchProdQty').focus();
-			$('#searchResults ul li').removeClass('selected');
-			$('#modalWindow').css('display', 'none');
-			searchItem = 0;
-		}
+		if(selectedAttr !== 'available')
+			return;
+
+		var	searchChosenTitle = $('#searchResults .selected .searchProdNAme').text(),
+			searchChosenPrice = $('#searchResults .selected').attr('price'),
+			searchChosenMaxQty = $('#searchResults .selected').attr('maxQty'),
+			searchChosenUnit = $('#searchResults .selected').data('unit'),
+			searchChosenId = $('#searchResults .selected').data('id');
+		
+		$('#searchResults').css('display', 'none');
+		$('#searchProd').val(searchChosenTitle).attr('maxQty', searchChosenMaxQty);
+		$('#searchProdPrice').val(searchChosenPrice);
+		$('#searchProdUnit').val(searchChosenUnit);
+		$('#searchProdId').val(searchChosenId);
+		$('#searchProdQty, #searchProdSumm').val('');
+		$('#searchProdQty').focus();
+		$('#searchResults ul li').removeClass('selected');
+		$('#modalWindow').css('display', 'none');
+		searchItem = 0;
 	};
 
 	//Add product to list
@@ -724,10 +730,10 @@
 							searchViewedCount = 15;
 						while(i < request.length && i < searchViewedCount){
 							if(request[i].qty == 0){
-								$('#searchResults ul').append('<li price='+request[i].price+' id="exist">'+request[i].title+'</li>');
+								$('#searchResults ul').append('<li price='+request[i].price+' data-unit='+ request[i].unit +' data-id='+ request[i]._id +' id="exist">'+request[i].title+'</li>');
 							}
 							else{
-								$('#searchResults ul').append('<li price='+request[i].price+' maxQty='+floorN(request[i].qty, 2)+' id="available"><span class="searchProdNAme">'+request[i].title+'</span><span class="searchCount">'+floorN(request[i].qty, 2)+'</span></li>');
+								$('#searchResults ul').append('<li price='+request[i].price+' data-unit='+ request[i].unit +' data-id='+ request[i]._id +' maxQty='+floorN(request[i].qty, 2)+' id="available"><span class="searchProdNAme">'+request[i].title+'</span><span class="searchCount">'+floorN(request[i].qty, 2)+'</span></li>');
 							}
 							i++;
 						}
@@ -756,6 +762,7 @@
 		}
 		//Key Enter
 		else if(e.keyCode == 13){
+			e.preventDefault();
 			selectSearched();
 		}
 	};
@@ -1039,11 +1046,11 @@
 			},
 			success: function(request) {
 				$('#loading').css('display', 'none');
-				if(formSuccess.length)
+				if(typeof formSuccess !== 'undefined' && formSuccess.length)
 					executeFunctionByName(formSuccess, window, request, $form);
 			},
 			error: function(){
-				if(formError.length)
+				if(typeof formError !== 'undefined' && formError.length)
 					executeFunctionByName(formError, window, request, $form);
 				$('#loading').css('display', 'none');
 				$('#errorAjax').css('display', 'block');

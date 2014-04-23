@@ -166,7 +166,7 @@ body{
 }
 input,
 select{
-	/* float:left; */
+	float:left;
 	border: 1px solid #12A5EB;
 }
 input[type="submit"]{
@@ -448,7 +448,6 @@ td#tableThCoast,
 /*END Edit product popup*/
 /*Sales list*/
 #searchProdList{position:relative;}
-#searchProdList input[type='text'],
 #salesTitle li{
 	float: none;
 	display:inline-block;
@@ -486,8 +485,9 @@ td#tableThCoast,
 #searchProdList .sProdName{border-radius:5px 0 0 0;}
 #searchResults{
 	position: absolute;
-	left: 0;
-	width: 179px;
+	left: -1px;
+	top: 25px;
+	width: 100%;
 	background: white;
 	color: #328DE0;
 	border: 1px solid #228EE2;
@@ -674,13 +674,13 @@ form .error,
 }
 #searchProdErrorQty2,
 #searchProdErrorQty{
-	left: 180px;
+	left: 215px;
 }
 #searchProdErrorExist,
 #searchProdErrorExistInCheck,
 #searchProdErrorQty,
 #searchProdErrorQty2{
-	top: 45px;
+	top: 62px;
 	color: #FF6F6F;
 	position: absolute;
 	font-size: 12px;
@@ -704,7 +704,7 @@ form .error,
 #searchProdErrorQty div,
 #searchProdErrorQty2 div{position: relative;}
 .errorArrow{
-	border-top: 10px solid transparent;
+	border-top: 0;
 	border-bottom: 10px solid #242429;
 	border-left: 10px solid transparent;
 	border-right: 10px solid transparent;
@@ -898,14 +898,19 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	margin: 0 0 0 45px;
 }
 
-.saleForm input{
+.saleForm input,
+.saleForm select{
 	width: 100% !important;
+	border: none;
+	text-align: center;
 }
 .saleForm tr td{
-	border: none !important;
 	padding: 0 !important;
 }
 .saleForm{
 	width: 80%;
 	float: left;
+}
+.sProdName{
+	position: relative;
 }

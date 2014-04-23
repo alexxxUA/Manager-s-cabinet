@@ -39,42 +39,54 @@ block home
 block products
 	#rightSide
 		div#salesListGroup
-			div#searchProdList
-				table(class="saleForm salesTableList")
-					thead
-						tr
-						th.sProdName Назва товару
-						th.sProdQty Кількість
-						th.sProdPrice Ціна
-						th.sProdSumm Сумма
-					tbody
-						tr(class='d-line-item', id='searchProdFrom')
-							td
-								input(type='text', placeholder='Назва товару', id='searchProd')
-								div#searchResults(style='display:none')
-									ul
-								div.helpMessages
-									#searchProdErrorExist
-										span(class="errorArrow")
-										div#text Товар не існує
-									#searchProdErrorExistInCheck
-										span(class="errorArrow")
-										div#text Товар вже додано до чеку
-									#searchProdErrorQty
-										span(class="errorArrow")
-										div#text
-										span В наявності є тільки
-										span(class='availableCount')
-									#searchProdErrorQty2
-										span(class="errorArrow")
-										div#text Введіть кількість
-							td
-								input(type='text', placeholder='Кількість', id='searchProdQty')
-							td
-								input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-							td
-								input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
-				input(type='button', value='+Чек', id='btnAddList')
+			div#searchProdList.clearfix
+				form(action='/addToSaleList', ajax='true')
+					table(class="saleForm salesTableList")
+						thead
+							tr
+								th.sClienList Клієнт
+								th.sProdName Назва товару
+								th.sProdQty Кількість
+								th.sProdUnit Одиниця Вимірювання
+								th.sProdPrice Ціна
+								th.sProdSumm Сумма
+						tbody
+							tr(class='d-line-item', id='searchProdFrom')
+								td.sClienList
+									select(name='clientId')
+										option(value='')
+										each client in clientList
+											option(value=client._id) #{client.firstName} #{client.lastName}
+								td.sProdName
+									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off")
+									input(type='hidden', name='_id', id='searchProdId')
+									div#searchResults(style='display:none')
+										ul
+								td
+									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off")
+								td
+									input(type='text', name='unit', placeholder='Одиниця Вимірювання', id='searchProdUnit', disabled='disabled')
+								td
+									input(type='text', name='price', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
+								td
+									input(type='text', name='amount', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
+					input(type='submit', value='+Чек')
+				
+				div.helpMessages
+					#searchProdErrorExist
+						span(class="errorArrow")
+						div#text Товар не існує
+					#searchProdErrorExistInCheck
+						span(class="errorArrow")
+						div#text Товар вже додано до чеку
+					#searchProdErrorQty
+						span(class="errorArrow")
+						div#text
+							span В наявності є тільки
+							span(class='availableCount')
+					#searchProdErrorQty2
+						span(class="errorArrow")
+						div#text Введіть кількість
 			
 
 			div#salesList

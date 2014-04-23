@@ -46,6 +46,45 @@ var mongourl = generate_mongo_url(mongo),
 	ObjectID = require('mongodb').ObjectID,
 	userID = '';
 
+var T = {
+	months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+	getCurTime: function(tZone, milisec){
+		var date = '',
+			dObject = {};
+		
+		if(typeof milisec !== 'undefined')
+			date = new Date(milisec);
+		else
+			date = new Date();
+		
+		dObject.curYear = date.getFullYear();
+		dObject.curMonth = date.getMonth();
+		dObject.curDate = date.getDate();
+		
+		return dObject;
+	},
+	getTimeMorning: function(tZone, milisec){
+		var dObject = this.getCurTime(tZone, milisec),
+			timeMorning = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' 00:00:01 GMT+'+tZone+'00');
+
+		return timeMorning.getTime();
+	},
+	getTimeEvning: function(tZone, milisec){
+		var dObject = this.getCurTime(tZone, milisec),
+			timeEvning = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' 23:59:59 GMT+'+tZone+'00');
+
+		return timeEvning.getTime();
+	},
+	getRangeTime: function(tZone, milisec){
+		var rangeTime = {};
+
+		rangeTime.start = this.getTimeMorning(tZone, milisec);
+		rangeTime.end = this.getTimeEvning(tZone, milisec);
+		
+		return rangeTime;
+	}
+}
+
 //set path to the views (template) directory
 app.set('views', __dirname + '/views');
 
@@ -272,25 +311,26 @@ app.get('/applyEditing', function(req, res){
 //Sales list
 app.get('/salesPage', function(req, res){
 	if(typeof(req.cookies.userID) !== 'undefined'){
-		var MILISEC = +(req.cookies.mSeconds);
-		var d = new Date(MILISEC),
-			curDate = d.getDate(),
-			curMonth = d.getMonth(),
-			curYear = d.getFullYear(),
+		var MILISEC = +(req.cookies.mSeconds),
 			timeZone = req.cookies.timeZone,
-			months = ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-
-			setTimeMorning = new Date(months[curMonth]+' '+curDate+', '+curYear+' 00:00:01 GMT+'+timeZone+'00'),
-			setTimeEvning = new Date(months[curMonth]+' '+curDate+', '+curYear+' 23:59:59 GMT+'+timeZone+'00'),
-
-			MILISECONDSsetTimeMorning = setTimeMorning.getTime(),
-			MILISECONDSsetTimeEvning = setTimeEvning.getTime();
-
-		require('mongodb').connect(mongourl, function(err, db){
-			db.collection('salesList', function(err, collection){
-				collection.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning} } ).sort({day: 1}).toArray(function(err, results){
-					res.render('salesPage.jade',  {user : req.cookies.login, userID : req.cookies.userID, day : req.cookies.day, salesList : results});
+			tRange = T.getRangeTime(timeZone, MILISEC),
+			renderData = {
+				user : req.cookies.login,
+				userID : req.cookies.userID,
+				day : req.cookies.day
+			};
+		
+		cMongo('salesList', function(err, col){
+			col.find({userID : req.cookies.userID, day: {$gte: tRange.start, $lte: tRange.end} } ).sort({day: 1}).toArray(function(err, results){
+				renderData.salesList = results;
+				cMongo('clients', function(err, col){
+					col.find({userID: req.cookies.userID}).toArray(function(err, results){
+						renderData.clientList = results;
+						res.render('salesPage.jade',  renderData);
+					});
 				});
+					
+
 			});
 		});
 	}
@@ -308,6 +348,40 @@ app.get('/search', function(req, res){
 			});
 		});
 	});
+});
+
+//Check product's fields before ading for sales list
+app.get('/checkProd', function(req, res){
+	if(typeof(req.cookies.userID) == 'undefined')
+		res.redirect('/');
+
+	var prod = {
+		title: req.query.title,
+		qty: req.query.qty,
+		price: req.query.price,
+		_id: req.query._id
+	}
+
+	cMongo('products', function(err, col){
+		col.findOne({userID : req.cookies.userID, _id : ObjectID(prod._id)}, function(err, result){
+			if(result.length !== 0){
+				var qty = +(req.query.qtySold);
+
+				collection.find({userID : req.cookies.userID, title : req.query.titleSold, qty : {$gte : qty}}).toArray(function(err, results){
+					if(results.length !== 0){
+						res.send('sold');
+					}
+					else{
+						res.send('qty');
+					}
+				});
+			}
+			else{
+				res.send('title');
+			}
+		});		
+	});
+
 });
 
 //Add product to sales list
@@ -367,25 +441,7 @@ app.get('/addToSaleList', function(req, res){
 				}
 				res.send('sold');
 			}
-			else{                                             //Check fields for sell
-				collection.find({userID : req.cookies.userID, title : req.query.titleSold}).toArray(function(err, result){
-					if(result.length !== 0){
-						var qty = +(req.query.qtySold);
-
-						collection.find({userID : req.cookies.userID, title : req.query.titleSold, qty : {$gte : qty}}).toArray(function(err, results){
-							if(results.length !== 0){
-								res.send('sold');
-							}
-							else{
-								res.send('qty');
-							}
-						});
-					}
-					else{
-						res.send('title');
-					}
-				});
-			}
+			
 		});
 	});
 });
@@ -454,7 +510,7 @@ app.get('/clients', function(req, res){
 		res.redirect('/');
 
 	cMongo('clients', function(err, col){
-		col.find().toArray(function(err, results){
+		col.find({userID: req.cookies.userID}).toArray(function(err, results){
 			//console.log(results);
 			res.render('clients.jade', {
 				clients: results,
