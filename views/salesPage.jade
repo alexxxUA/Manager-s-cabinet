@@ -40,7 +40,27 @@ block products
 	#rightSide
 		div#salesListGroup
 			div#searchProdList
-				ul#salesTitle
+				table(class="usersTable salesTableList")
+                    thead
+                        tr
+                            th.sProdName Назва товару
+                            th.sProdQty Кількість
+                            th.sProdPrice Ціна
+                            th.sProdSumm Сумма
+                    tbody
+                            tr(class='d-line-item', id='searchProdFrom')
+                                td
+                                   input(type='text', placeholder='Назва товару', id='searchProd') 
+                                td
+                                    input(type='text', placeholder='Кількість', id='searchProdQty')
+                                td
+                                    input(type='text', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
+                                td
+                                    input(type='text', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
+                                td
+                                    input(type='button', value='+Чек', id='btnAddList')
+				
+                ul#salesTitle
 					li.sProdName Назва товару
 					li.sProdQty Кількість
 					li.sProdPrice Ціна
@@ -85,7 +105,7 @@ block products
 						div#salingsText Сумма чеку:
 				-var salling = 0;
 				h2(class="tableTitle") Список проданих товарів за сьогодні
-				table(id='salesTableList')
+				table(id='salesTableList', class='salesTableList')
 					thead
 						tr
 							th(id='tableThTitle') Назва товару

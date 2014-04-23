@@ -304,33 +304,33 @@ select{
 }
 #tableList thead th,
 #tableListCheck thead th,
-#salesTableList thead th,
+.salesTableList thead th,
 #reportList thead th{
 	text-align:center;
 	padding: 10px;
 }
 #tableList tbody td,
 #tableListCheck tbody td,
-#salesTableList tbody td,
+.salesTableList tbody td,
 #reportList tbody td{padding:5px;}
 #tableList tbody tr:hover,
 #tableListCheck tbody tr:hover,
-#salesTableList tbody tr:hover,
+.salesTableList tbody tr:hover,
 #reportList tbody tr:hover{
 	background: #46726B;
 	color: #50EE4A;
 }
 #tableList,
 #tableListCheck,
-#salesTableList,
+.salesTableList,
 #reportList{width:100%;}
 #tableList th,
 #tableListCheck th,
-#salesTableList th,
+.salesTableList th,
 #reportList th{border:1px dashed #0BFFF5;}
 #tableList td,
 #tableListCheck td,
-#salesTableList td,
+.salesTableList td,
 #reportList td{border:1px solid #0BFFF5;}
 #tableThTitle{width:36%;}
 #tableThQty,
@@ -357,7 +357,7 @@ td#tableThCoast,
 /*Edit product popup*/
 #editProductPopup,
 .dialog{
-	/* display:none; */
+	display:none; 
 	position: absolute;
 	border: 1px solid white;
 	padding: 20px;
