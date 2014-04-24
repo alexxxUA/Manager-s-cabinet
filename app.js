@@ -7,6 +7,7 @@
 	mongodb     = require('mongodb');
 
 var mongo = {},
+	MongoClient = mongodb.MongoClient,
 	port = 8888;
 	
 app.configure('development', function(){
@@ -34,17 +35,12 @@ var generate_mongo_url = function(obj){
     }
 }
 
-var cMongo = function(dbName, callback){
-	mongodb.connect(mongourl, function(err, db){
-		db.collection(dbName, function(err, collection){
-			callback(err, collection);
-		});
-	});
-}
 
 var mongourl = generate_mongo_url(mongo),
+	MD = {}, //Databases connected at the end of server's code
 	ObjectID = require('mongodb').ObjectID,
 	userID = '';
+
 
 var T = {
 	months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -96,6 +92,22 @@ app.use(express.bodyParser());
 
 //Cookie
 app.use(express.cookieParser());
+
+/* Connect mongoDB and log that srver started */
+MongoClient.connect(mongourl, function(err, database) {
+	if(err) throw err;
+ 
+	
+	MD.db = database;
+	MD.users = MD.db.collection('users');
+	MD.products = MD.db.collection('products');
+	MD.salesList = MD.db.collection('salesList');
+	MD.clients = MD.db.collection('clients');
+ 	
+	//listen on localhost 8888
+ 	console.log('Server started on port: '+ port);
+	app.listen(port);
+});
 
 //Handle GET requests on '/'
 app.get('/', function(req, res){
@@ -320,17 +332,11 @@ app.get('/salesPage', function(req, res){
 				day : req.cookies.day
 			};
 		
-		cMongo('salesList', function(err, col){
-			col.find({userID : req.cookies.userID, day: {$gte: tRange.start, $lte: tRange.end} } ).sort({day: 1}).toArray(function(err, results){
-				renderData.salesList = results;
-				cMongo('clients', function(err, col){
-					col.find({userID: req.cookies.userID}).toArray(function(err, results){
-						renderData.clientList = results;
-						res.render('salesPage.jade',  renderData);
-					});
-				});
-					
-
+		MD.products.find({userID : req.cookies.userID, day: {$gte: tRange.start, $lte: tRange.end} } ).sort({day: 1}).toArray(function(err, results){
+			renderData.salesList = results;
+			MD.clients.find({userID: req.cookies.userID}).toArray(function(err, results){
+				renderData.clientList = results;
+				res.render('salesPage.jade',  renderData);
 			});
 		});
 	}
@@ -342,10 +348,8 @@ app.get('/salesPage', function(req, res){
 //Live search
 app.get('/search', function(req, res){
 	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('products', function(err, collection){
-			collection.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
-				res.send(results);
-			});
+		MD.products.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
+			res.send(results);
 		});
 	});
 });
@@ -362,25 +366,23 @@ app.get('/checkProd', function(req, res){
 		_id: req.query._id
 	}
 
-	cMongo('products', function(err, col){
-		col.findOne({userID : req.cookies.userID, _id : ObjectID(prod._id)}, function(err, result){
-			if(result.length !== 0){
-				var qty = +(req.query.qtySold);
+	MD.products.findOne({userID : req.cookies.userID, _id : ObjectID(prod._id)}, function(err, result){
+		if(result.length !== 0){
+			var qty = +(req.query.qtySold);
 
-				collection.find({userID : req.cookies.userID, title : req.query.titleSold, qty : {$gte : qty}}).toArray(function(err, results){
-					if(results.length !== 0){
-						res.send('sold');
-					}
-					else{
-						res.send('qty');
-					}
-				});
-			}
-			else{
-				res.send('title');
-			}
-		});		
-	});
+			MD.products.find({userID : req.cookies.userID, title : req.query.titleSold, qty : {$gte : qty}}).toArray(function(err, results){
+				if(results.length !== 0){
+					res.send('sold');
+				}
+				else{
+					res.send('qty');
+				}
+			});
+		}
+		else{
+			res.send('title');
+		}
+	});		
 
 });
 
@@ -401,48 +403,40 @@ app.get('/addToSaleList', function(req, res){
 		MILISECONDSsetTimeMorning = setTimeMorning.getTime(),
 		MILISECONDSsetTimeEvning = setTimeEvning.getTime();
 
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('products', function(err, collection){
-			if(req.query.sold == 'true'){                      //for selling
-				var chekList = req.query.arrCheckList,
-					chekListLength = +(chekList.length) - 1;
-				for(i=0; i <= chekListLength; chekListLength--){
-					(function(chekListLength) {
-						var qty = +(chekList[chekListLength].qtySold),
-							titleSold = chekList[chekListLength].titleSold,
-							priceSold = chekList[chekListLength].priceSold;
+	MD.db.collection('products', function(err, collection){
+		if(req.query.sold == 'true'){                      //for selling
+			var chekList = req.query.arrCheckList,
+				chekListLength = +(chekList.length) - 1;
+			for(i=0; i <= chekListLength; chekListLength--){
+				(function(chekListLength) {
+					var qty = +(chekList[chekListLength].qtySold),
+						titleSold = chekList[chekListLength].titleSold,
+						priceSold = chekList[chekListLength].priceSold;
 
-						require('mongodb').connect(mongourl, function(err, db){
-							db.collection('salesList', function(err, collection){
+						MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold }).toArray(function(err, results){
 
-								collection.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold }).toArray(function(err, results){
-
-									if(results.length !== 0){
-										collection.update({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold}, {$inc: {qty : +qty}});
-										console.log('Alredy exist');
-									}
-									else{
-										collection.insert({
-											userID : req.cookies.userID,
-											day : MILISEC,
-											title : titleSold,
-											qty : qty,
-											price : priceSold
-										});
-										console.log('New price');
-									}
+							if(results.length !== 0){
+								collection.update({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold}, {$inc: {qty : +qty}});
+								console.log('Alredy exist');
+							}
+							else{
+								collection.insert({
+									userID : req.cookies.userID,
+									day : MILISEC,
+									title : titleSold,
+									qty : qty,
+									price : priceSold
 								});
-								db.collection('products', function(err, collection){
-									collection.update({userID : req.cookies.userID, title : titleSold}, {$inc: {qty : -qty}});
-								});
-							});
+								console.log('New price');
+							}
 						});
-					})(chekListLength);
-				}
-				res.send('sold');
+						MD.products.update({userID : req.cookies.userID, title : titleSold}, {$inc: {qty : -qty}});
+
+				})(chekListLength);
 			}
-			
-		});
+			res.send('sold');
+		}
+		
 	});
 });
 
@@ -466,42 +460,37 @@ app.get('/renderReportList', function(req, res){
 		months = ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
 		setTimeReportFrom = new Date(months[monthFrom]+' '+dayFrom+', '+yearFrom+' 00:00:01 GMT+'+timeZone+'00'),
 		MILISECONDSsetTimeReportFrom = setTimeReportFrom.getTime();
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('salesList', function(err, collection){
-			if(req.query.reportDaysTill.length == 0){
-				var setTimeReportTill = new Date(months[monthFrom]+' '+dayFrom+', '+yearFrom+' 23:59:59 GMT+'+timeZone+'00'),
-					MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
-				collection.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
-					res.send(results);
-				});
-			}
-			else{
-				var reportDaysTill = (req.query.reportDaysTill).split('/'),
-					yearTill = +reportDaysTill[2],
-					monthTill = +reportDaysTill[0]-1,
-					dayTill = +reportDaysTill[1],
-					setTimeReportTill = new Date(months[monthTill]+' '+dayTill+', '+yearTill+' 23:59:59 GMT+'+timeZone+'00'),
-					MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
-				collection.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
-					res.send(results);
-				});
-			}
-		});
-	});
+
+		if(req.query.reportDaysTill.length == 0){
+			var setTimeReportTill = new Date(months[monthFrom]+' '+dayFrom+', '+yearFrom+' 23:59:59 GMT+'+timeZone+'00'),
+				MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
+			
+			MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
+				res.send(results);
+			});
+		}
+		else{
+			var reportDaysTill = (req.query.reportDaysTill).split('/'),
+				yearTill = +reportDaysTill[2],
+				monthTill = +reportDaysTill[0]-1,
+				dayTill = +reportDaysTill[1],
+				setTimeReportTill = new Date(months[monthTill]+' '+dayTill+', '+yearTill+' 23:59:59 GMT+'+timeZone+'00'),
+				MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
+			
+			MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
+				res.send(results);
+			});
+		}
 });
 app.get('/clearSalesList', function(req, res){
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('salesList', function(err, collection){
-			collection.remove({userID : req.cookies.userID}, function(err, result){
-				if(!err){
-					res.send('success');
-				}
-				else{
-					res.send('error');
-				}
-			});
-		})
-	})
+	MD.salesList.remove({userID : req.cookies.userID}, function(err, result){
+		if(!err){
+			res.send('success');
+		}
+		else{
+			res.send('error');
+		}
+	});
 });
 
 //Clients page
@@ -509,8 +498,7 @@ app.get('/clients', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
 		res.redirect('/');
 
-	cMongo('clients', function(err, col){
-		col.find({userID: req.cookies.userID}).toArray(function(err, results){
+		MD.clients.find({userID: req.cookies.userID}).toArray(function(err, results){
 			//console.log(results);
 			res.render('clients.jade', {
 				clients: results,
@@ -519,7 +507,6 @@ app.get('/clients', function(req, res){
 			});
 		});
 
-	});
 });
 
 //Client
@@ -527,8 +514,7 @@ app.get('/client/:id', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
 		res.redirect('/');
 
-	cMongo('clients', function(err, col){
-		col.findOne({_id: ObjectID(req.params.id)}, function(err, results){
+		MD.clients.findOne({_id: ObjectID(req.params.id)}, function(err, results){
 			res.render('client.jade', {
 				clientDet: results,
 				user : req.cookies.login,
@@ -536,7 +522,6 @@ app.get('/client/:id', function(req, res){
 			});
 		});
 
-	});
 });
 
 //Add client
@@ -553,10 +538,8 @@ app.get('/addClient', function(req, res){
 		userID : req.cookies.userID
 	}
 
-	cMongo('clients', function(err, col){
-		col.insert(client, function(err, results){
-			res.send(results);			
-		});
+	MD.clients.insert(client, function(err, results){
+		res.send(results);			
 	});
 });
 
@@ -565,15 +548,14 @@ app.get('/removeClient', function(req, res){
 	var userID = req.cookies.userID;
 	if(typeof userID == 'undefined')
 		res.redirect('/');
-	cMongo('clients', function(err, col){
-		col.remove({_id : ObjectID(req.query.clientId)}, function(err, removed){
+		
+		MD.clients.remove({_id : ObjectID(req.query.clientId)}, function(err, removed){
 			if(err){
 				console.log(err);
 				res.send('Client not find');				
 			}
 			res.send('Success');
 		});
-	});
 });
 
 
@@ -591,11 +573,9 @@ app.get('/editClient', function(req, res){
 		tel: req.query.tel
 	};
 	
-	cMongo('clients', function(err, col){
-		col.update({_id : ObjectID(req.query.clientId), userID : userID}, {$set: editClient }, function(){
-			res.send(editClient);
-		});		
-	});
+	MD.clients.update({_id : ObjectID(req.query.clientId), userID : userID}, {$set: editClient }, function(){
+		res.send(editClient);
+	});		
 });
 
 app.get('/aboutUS', function(req, res){
@@ -623,7 +603,3 @@ app.get('*', function(req, res){
 		}
     });
 });
-
-//listen on localhost 8888
-console.log('Server started on port: '+ port);
-app.listen(port);
