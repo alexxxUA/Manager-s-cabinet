@@ -763,6 +763,7 @@
 		//Key Enter
 		else if(e.keyCode == 13){
 			e.preventDefault();
+			e.stopImmediatePropagation();
 			selectSearched();
 		}
 	};
