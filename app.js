@@ -44,29 +44,40 @@ var mongourl = generate_mongo_url(mongo),
 
 var T = {
 	months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-	getCurTime: function(tZone, milisec){
-		var date = '',
+	getDataObj: function(tZone, milisec){
+		var date = {},
 			dObject = {};
 		
-		if(typeof milisec !== 'undefined')
+		if(milisec)
 			date = new Date(milisec);
 		else
-			date = new Date();
+			date = new Date()
 		
 		dObject.curYear = date.getFullYear();
 		dObject.curMonth = date.getMonth();
 		dObject.curDate = date.getDate();
+		dObject.curHours = date.getHours();
+		dObject.curMinutes = date.getMinutes();
 		
 		return dObject;
 	},
+	getFormatedDate: function(){
+
+	},
+	getTimeWithOffset: function(tZone, milisec){
+		var dObject = this.getDataObj(tZone, milisec),
+			curTime = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' '+ dObject.curHours +':'+ dObject.curMinutes +':01 GMT+'+tZone+'00');
+
+		return curTime.getTime();
+	},
 	getTimeMorning: function(tZone, milisec){
-		var dObject = this.getCurTime(tZone, milisec),
+		var dObject = this.getDataObj(tZone, milisec),
 			timeMorning = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' 00:00:01 GMT+'+tZone+'00');
 
 		return timeMorning.getTime();
 	},
 	getTimeEvning: function(tZone, milisec){
-		var dObject = this.getCurTime(tZone, milisec),
+		var dObject = this.getDataObj(tZone, milisec),
 			timeEvning = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' 23:59:59 GMT+'+tZone+'00');
 
 		return timeEvning.getTime();
@@ -81,6 +92,11 @@ var T = {
 	}
 }
 
+//Check if user logged in
+function isLoggedIn(userID){
+	if(typeof userID == 'undefined')
+		res.redirect('/');
+}
 //set path to the views (template) directory
 app.set('views', __dirname + '/views');
 
@@ -322,27 +338,27 @@ app.get('/applyEditing', function(req, res){
 
 //Sales list
 app.get('/salesPage', function(req, res){
-	if(typeof(req.cookies.userID) !== 'undefined'){
-		var MILISEC = +(req.cookies.mSeconds),
-			timeZone = req.cookies.timeZone,
-			tRange = T.getRangeTime(timeZone, MILISEC),
-			renderData = {
-				user : req.cookies.login,
-				userID : req.cookies.userID,
-				day : req.cookies.day
-			};
-		
-		MD.products.find({userID : req.cookies.userID, day: {$gte: tRange.start, $lte: tRange.end} } ).sort({day: 1}).toArray(function(err, results){
-			renderData.salesList = results;
-			MD.clients.find({userID: req.cookies.userID}).toArray(function(err, results){
-				renderData.clientList = results;
-				res.render('salesPage.jade',  renderData);
-			});
+	isLoggedIn(req.cookies.userID);
+
+	var MILISEC = +(req.cookies.mSeconds),
+		timeZone = req.cookies.timeZone,
+		tRange = T.getRangeTime(timeZone, MILISEC),
+		userID = req.cookies.userID,
+		renderData = {
+			user : req.cookies.login,
+			userID : req.cookies.userID,
+			day : req.cookies.day
+		};
+	
+	//Get sales
+	MD.salesList.find({userID : userID, date: {$gte: tRange.start, $lte: tRange.end} } ).sort({day: -1}).toArray(function(err, results){
+		renderData.salesList = results;
+		//Get clients
+		MD.clients.find({userID: userID}).toArray(function(err, results){
+			renderData.clientList = results;
+			res.render('salesPage.jade', renderData);
 		});
-	}
-	else{
-		res.redirect('/');
-	}
+	});
 });
 
 //Live search
@@ -354,90 +370,60 @@ app.get('/search', function(req, res){
 	});
 });
 
-//Check product's fields before ading for sales list
-app.get('/checkProd', function(req, res){
-	if(typeof(req.cookies.userID) == 'undefined')
-		res.redirect('/');
+//Add product to sales list
+app.get('/saleCheck', function(req, res){
+	isLoggedIn(req.cookies.userID);
 
-	var prod = {
-		title: req.query.title,
-		qty: req.query.qty,
-		price: req.query.price,
-		_id: req.query._id
+	var timeZone = req.cookies.timeZone,
+		curTime = +T.getTimeWithOffset(timeZone),
+		checkNumb = (curTime +'').slice(curTime.length-10, curTime.length),
+		userID = req.cookies.userID,
+		clientID = req.query.clientId,
+		clientFullName = req.query.clientFullName,
+		totalAmount = 0,
+		prodList = req.query.prodList,	
+		prodListLength = +prodList.length - 1,
+		newProdList = [],
+		check = {};
+		
+	//Generate new prodList array - without label info
+	for(i=0; i <= prodListLength; prodListLength--){
+		(function(prodListLength) {
+			var prod = {
+					title: prodList[prodListLength].title.val,
+					qty: +prodList[prodListLength].qty.val,
+					price: +prodList[prodListLength].price.val,
+					amount: +prodList[prodListLength].amount.val,
+					unit: prodList[prodListLength].unit.val
+				};
+			totalAmount += prod.amount;
+			newProdList.push(prod);
+			
+			//Update product - reduce qty
+			MD.products.update({userID : userID, _id: ObjectID(prodList[prodListLength]._id.val)}, {$inc: {qty : -prod.qty}}, function(err, result){
+				if(err) throw err;
+			});
+		})(prodListLength);
 	}
 
-	MD.products.findOne({userID : req.cookies.userID, _id : ObjectID(prod._id)}, function(err, result){
-		if(result.length !== 0){
-			var qty = +(req.query.qtySold);
+	check = {
+		userID: userID,
+		clientID: clientID,
+		clientFullName: clientFullName,
+		date: curTime,
+		checkNumb: checkNumb,
+		totalAmount: totalAmount,
+		prodList: newProdList
+	}
+	//console.log(newProdList);
 
-			MD.products.find({userID : req.cookies.userID, title : req.query.titleSold, qty : {$gte : qty}}).toArray(function(err, results){
-				if(results.length !== 0){
-					res.send('sold');
-				}
-				else{
-					res.send('qty');
-				}
-			});
-		}
-		else{
-			res.send('title');
-		}
-	});		
+	//Store solded check
+	MD.salesList.insert(check, function(err, result){
+		if(err) throw err;
 
-});
-
-//Add product to sales list
-app.get('/addToSaleList', function(req, res){
-
-	var MILISEC = +(req.query.mSeconds);
-	var d = new Date(MILISEC),
-		curYear = d.getFullYear(),
-		curMonth = d.getMonth(),
-		curDate = d.getDate(),
-		timeZone = req.cookies.timeZone,
-		months = ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-
-		setTimeMorning = new Date(months[curMonth]+' '+curDate+', '+curYear+' 00:00:01 GMT+'+timeZone+'00'),
-		setTimeEvning = new Date(months[curMonth]+' '+curDate+', '+curYear+' 23:59:59 GMT+'+timeZone+'00'),
-
-		MILISECONDSsetTimeMorning = setTimeMorning.getTime(),
-		MILISECONDSsetTimeEvning = setTimeEvning.getTime();
-
-	MD.db.collection('products', function(err, collection){
-		if(req.query.sold == 'true'){                      //for selling
-			var chekList = req.query.arrCheckList,
-				chekListLength = +(chekList.length) - 1;
-			for(i=0; i <= chekListLength; chekListLength--){
-				(function(chekListLength) {
-					var qty = +(chekList[chekListLength].qtySold),
-						titleSold = chekList[chekListLength].titleSold,
-						priceSold = chekList[chekListLength].priceSold;
-
-						MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold }).toArray(function(err, results){
-
-							if(results.length !== 0){
-								collection.update({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeMorning, $lte: MILISECONDSsetTimeEvning}, title : titleSold, price : priceSold}, {$inc: {qty : +qty}});
-								console.log('Alredy exist');
-							}
-							else{
-								collection.insert({
-									userID : req.cookies.userID,
-									day : MILISEC,
-									title : titleSold,
-									qty : qty,
-									price : priceSold
-								});
-								console.log('New price');
-							}
-						});
-						MD.products.update({userID : req.cookies.userID, title : titleSold}, {$inc: {qty : -qty}});
-
-				})(chekListLength);
-			}
-			res.send('sold');
-		}
-		
+		res.send(result);
 	});
+
 });
 
 //Report
@@ -498,15 +484,14 @@ app.get('/clients', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
 		res.redirect('/');
 
-		MD.clients.find({userID: req.cookies.userID}).toArray(function(err, results){
-			//console.log(results);
-			res.render('clients.jade', {
-				clients: results,
-				user : req.cookies.login,
-				day : req.cookies.day
-			});
+	MD.clients.find({userID: req.cookies.userID}).toArray(function(err, results){
+		//console.log(results);
+		res.render('clients.jade', {
+			clients: results,
+			user : req.cookies.login,
+			day : req.cookies.day
 		});
-
+	});
 });
 
 //Client

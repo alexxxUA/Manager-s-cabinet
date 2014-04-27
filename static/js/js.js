@@ -731,7 +731,7 @@ function searchProd(e){
 					var i=0,
 						searchViewedCount = 15;
 					while(i < request.length && i < searchViewedCount){
-						if(request[i].qty == 0){
+						if(+request[i].qty <= 0){
 							$('#searchResults ul').append('<li price='+request[i].price+' data-unit='+ request[i].unit +' data-id='+ request[i]._id +' id="exist">'+request[i].title+'</li>');
 						}
 						else{
@@ -943,6 +943,20 @@ $('#content').css('padding-bottom', footerHeight+80);
 -------------------------------------------------------------
 
 */
+//Clear table
+function clearTable($context){
+	$context.find('tbody tr:not(.checkAmount)').remove();
+	$context.find('.totalAmount').text('0.00');
+}
+//Get sring format for DATE
+function getFormatedDate(milisec){
+	var d = new Date(milisec),
+		curDate = d.getDate(),
+		curMonth = d.getMonth()+1,
+		curYear = d.getFullYear();
+		
+	return (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
+}
 
 //RegExp selector
 jQuery.expr[':'].regex = function(elem, index, match) {
@@ -959,14 +973,11 @@ jQuery.expr[':'].regex = function(elem, index, match) {
 }
 
 //Get data from form
-function getFormData($form){
+function getFormData($context){
 	var data = {};
-	$form.find('[name]').each(function(){
+	$context.find('[name]').each(function(){
 		var $this = $(this),
 			elVal = $this.val();
-
-		if($this.prop('tagName') == 'SELECT' && $this.find(':selected').val() == $this.find(':first').val())
-			elVal = '';
 
 		data[$this.attr('name')] = elVal;
 	});
@@ -1004,8 +1015,9 @@ var Dialog = {
 		$(document).delegate(obj.modalBg, 'click', $.proxy(obj, 'hide'));
 		$(document).delegate(obj.closeBtn, 'click', $.proxy(obj, 'hide'));
 	},
-	collectLineData: function($params){
-		var data = {};
+	getAttrData: function($context){
+		var $params = $context.find('[data-name]'),
+			data = {};
 
 		$params.each(function(){
 			var $this = $(this),
@@ -1037,10 +1049,9 @@ var Dialog = {
 			xPos = e.pageX,
 			$modals = $('#modals'),
 			$editLine = $this.closest('.d-line-item'),
-			$params = $editLine.find('[data-name]'),
 			templateName = $this.attr('data-template'),
 			lineId = $editLine.attr('id'),
-			data = this.collectLineData($params);
+			data = this.getAttrData($editLine);
 
 		data.lineId = lineId;		
 
@@ -1156,7 +1167,7 @@ var Validator = {
 	}
 }
 
-//Ajax form submit
+//Ajax form submit abort
 function ajaxStop(xhr, options){
 	xhr.abort();
 	$('#loading').css('display', 'none');
@@ -1236,26 +1247,33 @@ function addProdToSalesList(xhr, opts, $form){
 	
 	var formData = getFormData($form),
 		prodLineItem = templates.productListItem()(formData),
-		chunkSummCheck = +$('#salingsValueCheck').text(),
-		$checkList = $('#checkList');
+		$checkList = $('#checkList'),
+		$checkListAmount = $checkList.find('.totalAmount'),
+		checkListAmountVal = +$checkListAmount.text(),
+		$formClienField = $form.find('[name="clientId"]'),
+		$clientField = $checkList.find('[data-name="clientId"]');
 	
-	//Add form
+	//Reset 'Add form'
 	$form.find(':focus').blur();
 	$form.find('[type="text"]').val('');
 	Validator.removeAllErrorClasses($form);
 	$('#searchProd').focus();
+	$formClienField.attr('disabled', 'disabled');
 	
 	//Render check list
-	$checkList.find('tbody').append(prodLineItem);
-	$('#salingsValueCheck').text(floorN(chunkSummCheck+ (+formData.amount), 2));
+	$checkList.find('tbody').prepend(prodLineItem);
+	$checkListAmount.text(floorN(checkListAmountVal+ (+formData.amount), 2));
 	$checkList.slideDown();
+	
+	//Cliend name and ID
+	$clientField.text(formData.clientFullName).attr('data-val', formData.clientId).show();	
 }
 function prodEditCheck(xhr, opts, $form){
 	ajaxStop(xhr);
 	
 	var lineId = $form.closest('.editPopup').attr('data-line-id'),
 		$updateLine = $('.d-line-item#'+ lineId),
-		$closestSalesValue = $updateLine.closest('#checkList').find('#salingsValueCheck');
+		$closestSalesValue = $updateLine.closest('table').find('.totalAmount');
 
 	var prevQty = +$form.find('[name="qty"]').attr('data-prev-val'),
 		newQty = +$form.find('[name="qty"]').val(),
@@ -1266,15 +1284,61 @@ function prodEditCheck(xhr, opts, $form){
 			qty: newQty,
 			amount: amount
 		};
-
+	//Set total amount
 	$closestSalesValue.text(salesValue + ( (newQty-prevQty) * price));
+	//Update lineItem
 	updateDataLineItem($updateLine, data);
 
 	Dialog.hide();
 
 	console.log('Edit prod');
 }
-
+function saleCheck(e){
+	var $this = $(e.currentTarget),
+		$dCheckList = $('#checkList'),
+		$soldCheckList = $('.soldCheckList'),
+		$soldCheckListTotalAmount = $soldCheckList.find('.totalAmount'),
+		$saleForm = $('.saleForm'),
+		$saleFormClient = $saleForm.find('[name="clientId"]'),
+		action = $this.attr('action'),
+		formData = {
+			clientId: '',
+			clientFullName: '',
+			prodList: []
+		},
+		clientId = $this.find('[data-name="clientId"]').attr('data-val'),
+		clientFullName = $this.find('[data-name="clientId"]').text();
+	
+	//Collect data	
+	formData.clientId = clientId;
+	formData.clientFullName = clientFullName;	
+	$this.find('table .d-line-item').each(function(){
+		formData.prodList.push(Dialog.getAttrData($(this)));
+	});
+	
+	$.ajax({
+		url: action,
+		data: formData,
+		success: function(request){
+			var data = request[0],
+				tableTotalAmount = +$soldCheckListTotalAmount.text();
+			
+			data.dateString = getFormatedDate(data.date);
+			
+			//Configure other DOM el.
+			$saleFormClient.removeAttr('disabled');
+			$dCheckList.hide();
+			clearTable($dCheckList);
+			
+			//Render sold check list
+			$soldCheckList.find('tbody').prepend(templates.checkItem()(data));
+			$soldCheckListTotalAmount.text( tableTotalAmount + data.totalAmount );			
+		},
+		error: function(err){
+			
+		}
+	});
+}
 
 //Inits
 Dialog.init();
@@ -1302,3 +1366,22 @@ Validator.init();
 // 		$(window).unbind('mousemove');
 // 	}
 // }
+
+
+/*-------------------------------------------------------*/
+/*-------------------- DELEGATES ------------------------*/
+/*-------------------------------------------------------*/
+
+//Set full name into sibling hidden input
+$(document).delegate('[name="clientId"]', 'change', function(){
+	var $this = $(this),
+		fullName= $this.find(':selected').text(),
+		$siblingsFullName = $this.siblings('[name="clientFullName"]');
+	
+	$siblingsFullName.val(fullName);
+});
+
+$(document).delegate('.checkForm', 'submit', function(e){
+	e.preventDefault();
+	saleCheck(e);
+});

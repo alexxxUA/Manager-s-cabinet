@@ -42,7 +42,7 @@ var templates = {
 	},
 	newClient: function(){
 		return _.template(
-			"<tr class='d-line-item' id='<%= _id %>'>"+
+			"<tr id='<%= _id %>' class='d-line-item'>"+
 				"<td>"+
 					"<a href='/client/<%= _id %>'>"+
 						"<span data-name='firstName' data-val='<%= firstName %>' data-label='Ім‘я'><%= firstName %></span>"+
@@ -124,5 +124,21 @@ var templates = {
 				"</form>"+
 			"</div>"
 		);
-	}
+	},
+	checkItem: function(){
+		return _.template(
+			"<tr class='d-line-item' id='<%= _id %>'>"+
+				"<td class='cNumb'>"+
+					"<form action='/showCheck' ajax='true' ajax-success='populateCheckDialog'>"+
+						"<input type='hidden' name='_id' value='<%= _id %>'>"+
+						"<input type='hidden' name='checkNumb' value='<%= checkNumb %>'>"+
+						"<input type='submit' value='<%= checkNumb %>'>"+
+					"</form>"+
+				"</td>"+
+				"<td class='checkClient'><%= clientFullName %></td>"+
+				"<td class='checkDate'><%= dateString %></td>"+
+				"<td class='checkAmount'><%= totalAmount %></td>"+
+			"</tr>"
+		);
+	},
 }

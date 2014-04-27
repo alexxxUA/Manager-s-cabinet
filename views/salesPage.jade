@@ -44,10 +44,11 @@ block products
 						tbody
 							tr(class='d-line-item', id='searchProdFrom')
 								td.sClienList.ws-field
-									select(name='clientId')
-										option(value='') Загальний
+									select(name='clientId', value='noName')
+										option(value='noName') Загальний
 										each client in clientList
 											option(value=client._id) #{client.firstName} #{client.lastName}
+									input(type='hidden', name='clientFullName', value='Загальний')
 								td.sProdName.ws-field
 									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off", data-validate-type='attrVal ifAdded')
 									input(type='hidden', name='_id', id='searchProdId')
@@ -83,38 +84,49 @@ block products
 
 			div#salesList
 				#checkList(style='display:none')
-					a(href='#', id='btnSell', title='ctr+enter') Продати
-					h2(class="tableTitle") Чек
-					table(id='tableListCheck')
-						thead
-							tr
-								th(id='tableThTitle') Назва товару
-								th(id='tableThQty') Кількість
-								th(id='tableThUnit') Одиниця Вимірювання
-								th(id='tableThPrice') Ціна
-								th(id='tableThCoast') Сумма
-								th(id='tableThActions') Дії
-						tbody
-					div#salingsCheck
-						div#salingsValueCheck 0.00
-						div#salingsText Сумма чеку:
+					form.checkForm(action='/saleCheck')
+						input.btnSell(type='submit', title='ctr+enter', value='Продати')
+						div.d-line-item
+							h2.client(data-name='clientId', data-val='')
+						h2.tableTitle Чек
+						table#tableListCheck.prodTable
+							thead
+								tr
+									th.tableThTitle Назва товару
+									th.tableThQty Кількість
+									th.tableThUnit Одиниця Вимірювання
+									th.tableThPrice Ціна
+									th.tableThCoast Сумма
+									th.tableThActions Дії
+							tbody
+								tr.checkAmount
+									td.totalText(colspan='3') Сумма чеку: 
+									td.totalAmount(colspan='3') 0.00
+				
 				-var salling = 0;
-				h2(class="tableTitle") Список проданих товарів за сьогодні
-				table(id='salesTableList', class='salesTableList')
+
+				h2(class="tableTitle") Список реалізованих чеків станом на сьогодні
+				table(class='salesTableList soldCheckList')
 					thead
 						tr
-							th(id='tableThTitle') Назва товару
-							th(id='tableThQty') Кількість
-							th(id='tableThPrice') Ціна
-							th(id='tableThCoast') Сумма
+							th.cNumber № чеку
+							th.cClient Покупець
+							th.cDate Дата
+							th.cAmount Сума
 					tbody
-						each sale in salesList
-							tr
-								td(id='salesTableTitle')=sale.title
-								td(id='salesTableQty')=floorN(sale.qty, 2)
-								td(id='salesTablePrice')=floorN(sale.price, 2)
-								td(id='salesTableCoast')=sales=floorN(sale.price*sale.qty, 2)
-							-salling = (+salling)+(+sales);
-				div#salings
-					div#salingsValue #{floorN(salling, 2)}
-					div#salingsText Продано на:
+						-var totalAmount = 0;
+						each check in salesList
+							-totalAmount += +check.totalAmount;
+							tr.d-line-item(id=check._id)
+								td.cNumb
+									form(action='/showCheck', ajax='true', ajax-succes='populateCheckDialog')
+										input(type='hidden', name='_id', value=check._id)
+										input(type='hidden', name='checkNumb', value=check.checkNumb)
+										input(type='submit', value=check.checkNumb)
+								td.checkClient=check.clientFullName
+								td.checkDate=getFormatedDate(check.date)
+								td.checkAmount=check.totalAmount
+
+						tr.checkAmount
+							td.totalText(colspan='3') Загальна сумма: 
+							td.totalAmount=totalAmount
