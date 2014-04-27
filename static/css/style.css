@@ -604,7 +604,8 @@ td#tableThCoast,
 #reportList{
 	clear:both;
 }
-#errorReport{
+#errorReport,
+.hidden{
 	display:none;
 }
 #getReportForm{

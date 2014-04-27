@@ -1,1 +1,1 @@
-nodemon --watch app.js
+nodemon app.js

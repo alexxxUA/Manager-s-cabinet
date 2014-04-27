@@ -1,13 +1,4 @@
 ﻿extends layout
-block popupEdit
-	div#editProductPopup
-		#closeBtn close
-		h4 Корегування продукту :
-		#editProductWraper
-			input(type='text', placeholder='Назва продукту', id='nameProd', disabled='disabled')
-			input(type='text', placeholder='Кількість', id='qtyProd')
-			input(type='text', placeholder='Ціна', id='priceProd', disabled='disabled')
-			input(type='submit',  value='Змінити', id='applyEditsCheck')
 block home
 	#leftSide
 		h4#day Сьогодні: #{day}
@@ -40,7 +31,7 @@ block products
 	#rightSide
 		div#salesListGroup
 			div#searchProdList.clearfix
-				form(action='/checkProd', ajax='true')
+				form(action='#', ajax='true', ajax-before='addProdToSalesList')
 					table(class="saleForm salesTableList")
 						thead
 							tr
@@ -52,23 +43,24 @@ block products
 								th.sProdSumm Сумма
 						tbody
 							tr(class='d-line-item', id='searchProdFrom')
-								td.sClienList
+								td.sClienList.ws-field
 									select(name='clientId')
-										option(value='')
+										option(value='') Загальний
 										each client in clientList
 											option(value=client._id) #{client.firstName} #{client.lastName}
-								td.sProdName
-									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off")
+								td.sProdName.ws-field
+									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off", data-validate-type='attrVal ifAdded')
 									input(type='hidden', name='_id', id='searchProdId')
 									div#searchResults(style='display:none')
 										ul
-								td
-									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off")
-								td
+								td.ws-field
+									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off", data-validate-type='availQty')
+									input(type='hidden', name='maxQty', id='searchProdMaxQty')
+								td.ws-field
 									input(type='text', name='unit', placeholder='Одиниця Вимірювання', id='searchProdUnit', disabled='disabled')
-								td
+								td.ws-field
 									input(type='text', name='price', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-								td
+								td.ws-field
 									input(type='text', name='amount', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
 					input(type='submit', value='+Чек')
 				
@@ -98,6 +90,7 @@ block products
 							tr
 								th(id='tableThTitle') Назва товару
 								th(id='tableThQty') Кількість
+								th(id='tableThUnit') Одиниця Вимірювання
 								th(id='tableThPrice') Ціна
 								th(id='tableThCoast') Сумма
 								th(id='tableThActions') Дії
