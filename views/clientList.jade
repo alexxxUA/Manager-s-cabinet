@@ -22,7 +22,7 @@ div(class="clientList")
                         td
                             span(data-name='tel', data-val=client.tel, data-label='Телефон')=client.tel
                         td(class='actionBtnsTd')
-                            a(href='/editClient', class='edit', data-template='editClientTemplate', clientid=client._id) Змінити
+                            a(href='/editClient', class='dialogData', dialog-template='editClient', clientid=client._id) Змінити
                             form(action='/removeClient', ajax='true', ajax-success='removeLineItem')
                                 input(type='hidden', name='clientId', value=client._id)
                                 input(type='submit', class='del', value='Видалити')

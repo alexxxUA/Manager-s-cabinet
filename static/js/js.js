@@ -13,7 +13,7 @@ $('input[placeholder], textarea[placeholder]').placeholder();
 var $loadingItem = $('#loading'),
 	$errorItem = $('#errorAjax');
 
-var titleError = $('#rightSide #productList tr td').get();
+var titleError = $('#rightSide .prodTable tr td');
 if(titleError.length == 0){
 	$('#tableListError').css('display', 'block');
 };
@@ -941,8 +941,10 @@ $('#content').css('padding-bottom', footerHeight+80);
 -------------------------------------------------------------
 ---------------------- NEW PART OF CODE ---------------------
 -------------------------------------------------------------
-
 */
+//Available units
+var units = ['шт', 'кг', 'л', 'м'];
+
 //Clear table
 function clearTable($context){
 	$context.find('tbody tr:not(.checkAmount)').remove();
@@ -1049,18 +1051,33 @@ var Dialog = {
 			xPos = e.pageX,
 			$modals = $('#modals'),
 			$editLine = $this.closest('.d-line-item'),
-			templateName = $this.attr('data-template'),
+			templateName = $this.attr('dialog-template'),
 			lineId = $editLine.attr('id'),
 			data = this.getAttrData($editLine);
 
-		data.lineId = lineId;		
-
-		var $dialog = $( templates[templateName]()(data) ).css({'top': yPos, 'left': xPos});
-		this.show($dialog);		
+		data.lineId = lineId;
+		
+		this.show(templates[templateName](data), {y: yPos, x: xPos});		
 	},
-	show: function($dialog){
+	show: function(dialog, coords){
+		var $dialog = $(dialog),
+			offsetTop = window.scrollY;
+		
+		$dialog.css({'visibility': 'hidden', 'top': 0, 'left': 0});
 		$(this.modalBg).css({'top': '0', 'left': '0'}).show();
 		$(this.dialogCont).append($dialog);
+		
+		if(coords){
+			$dialog.css({'top': coords.y, 'left': coords.x});
+		}
+		else{
+			$dialog.css({
+				'top': offsetTop+20,
+				'left': '50%',
+				'margin-left': -$dialog.width()/2
+			});			
+		}
+		$dialog.css({'visibility': 'visible'});		
 	},
 	hide: function(){
 		$(this.modalBg).hide().css({'top': '-100%', 'left': '-100%'});
@@ -1117,7 +1134,7 @@ var Validator = {
 				var isValid = true;
 				
 				if(typeof obj.valRegExps[data.validatorType[i]] !== 'undefined'){
-					if((obj.valRegExps[data.validatorType[i]]).test(checkValue))
+					if((obj.valRegExps[data.validatorType[i]]).test(data.checkValue))
 						isValid = true;
 					else
 						isValid = false;
@@ -1233,20 +1250,29 @@ function removeLineItem(request, $form){
 function clientAdded(request, $form){
 	var $tbody = $('.usersTable').find('tbody');
 
-	$tbody.append( $( templates.newClient()(request[0]) ) );	
+	$tbody.append( $( templates.newClient(request[0]) ) );	
 }
-function clientEdited(request, $form){
+function dialogEdited(request, $form){
 	var lineId = $form.closest('.editPopup').attr('data-line-id'),
 		$updateLine = $('.d-line-item#'+ lineId);
 
 	updateDataLineItem($updateLine, request);
 	Dialog.hide();
 }
+function prodEdited(request, $form){
+	var data = request;
+	
+	//Set amount into base prod object data
+	data.amount = data.qty*data.price;
+	
+	//Update base fields in form
+	dialogEdited(data, $form);	
+}
 function addProdToSalesList(xhr, opts, $form){
 	ajaxStop(xhr);
 	
 	var formData = getFormData($form),
-		prodLineItem = templates.productListItem()(formData),
+		prodLineItem = templates.productListItem(formData),
 		$checkList = $('#checkList'),
 		$checkListAmount = $checkList.find('.totalAmount'),
 		checkListAmountVal = +$checkListAmount.text(),
@@ -1331,13 +1357,19 @@ function saleCheck(e){
 			clearTable($dCheckList);
 			
 			//Render sold check list
-			$soldCheckList.find('tbody').prepend(templates.checkItem()(data));
+			$soldCheckList.find('tbody').prepend(templates.checkItem(data));
 			$soldCheckListTotalAmount.text( tableTotalAmount + data.totalAmount );			
 		},
 		error: function(err){
 			
 		}
 	});
+}
+
+function populateCheckDialog(request, $form){
+	
+	var checkList = templates.dialog({templateContent: request});
+	Dialog.show(checkList);
 }
 
 //Inits

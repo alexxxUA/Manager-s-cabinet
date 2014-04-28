@@ -1,18 +1,15 @@
 var templates = {
-	dialog: function(){
-		return _.template(
-			"<div class='dialog editPopup'>"+
+	dialog: _.template(
+			"<div class='dialog'>"+
 				"<div class='closeBtn'>close</div>"+
-				"<div class='content'> <%=templateContent%> </div>"+
+				"<div class='content'> <%= templateContent %> </div>"+
 			"</div>"
-		);
-	},
-	esditClient: function(){
-		return _.template(
+	),
+	editClient: _.template(
 			"<div class='dialog editPopup' data-line-id='<%= lineId %>'>"+
 				"<div class='closeBtn'>close</div>"+
-				"<form action='/editClient' ajax='true' ajax-success='clientEdited'>"+
-					"<input type='hidden' name='clientId' value='<%= clientId %>'/>"+
+				"<form action='/editClient' ajax='true' ajax-success='dialogEdited'>"+
+					"<input type='hidden' name='clientId' value='<%= lineId %>'/>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= firstName.label %></label>"+
 				 		"<input type='text' name='firstName' value='<%= firstName.val %>' />"+
@@ -38,10 +35,8 @@ var templates = {
 				 	"</div>"+
 				"</form>"+
 			"</div>"
-		);
-	},
-	newClient: function(){
-		return _.template(
+	),
+	newClient: _.template(
 			"<tr id='<%= _id %>' class='d-line-item'>"+
 				"<td>"+
 					"<a href='/client/<%= _id %>'>"+
@@ -60,17 +55,15 @@ var templates = {
 					"<span data-name='tel' data-val='<%= tel %>' data-label='Телефон'><%= tel %></span>"+
 				"</td>"+
 				"<td>"+
-					"<a href='#' class='dialogData' data-template='editClientTemplate' clientid='<%= _id %>'>Змінити</a>"+
+					"<a href='#' class='dialogData' dialog-template='editClient' clientid='<%= _id %>'>Змінити</a>"+
 					"<form action='/removeClient' ajax='true' ajax-success='removeLineItem'>"+
 						"<input type='hidden' name='clientId' value='<%= _id %>'>"+
 						"<input type='submit' class='del' value='Видалити'>"+
 					"</form>"+
 				"</td>"+
 			"</tr>"
-		);
-	},
-	productListItem: function(){
-		return _.template(
+	),
+	productListItem: _.template(
 			"<tr class='d-line-item', id='<%=_id%>''>"+
 				"<td id='tableTitle'>"+
 					"<span data-name='title' data-val='<%=title%>' data-label='Назва продукту'><%=title%></span>"+
@@ -90,14 +83,12 @@ var templates = {
 					"<span data-name='amount' data-val='<%=amount%>' data-label='Сума'><%=amount%></span>"+
 				"</td>"+
 				"<td id='tableActions'>"+
-					"<a href='#' class='dialogData' data-template='editProductInCheck' prodid='<%= _id %>'>Змінити</a>"+
+					"<a href='#' class='dialogData' dialog-template='editProductInCheck' prodid='<%= _id %>'>Змінити</a>"+
 					"<input type='button' id='Del' name='<%=title%>' value='Видалити'>"+
 				"</td>"+
 			"</tr>"
-		);
-	},
-	editProductInCheck: function(){
-		return _.template(
+	),
+	editProductInCheck: _.template(
 			"<div class='dialog editPopup' data-line-id='<%= lineId %>'>"+
 				"<div class='closeBtn'>close</div>"+
 				"<form action='#' ajax='true' ajax-before='prodEditCheck'>"+
@@ -123,22 +114,47 @@ var templates = {
 					"</div>"+
 				"</form>"+
 			"</div>"
-		);
-	},
-	checkItem: function(){
-		return _.template(
+	),
+	checkItem: _.template(
 			"<tr class='d-line-item' id='<%= _id %>'>"+
 				"<td class='cNumb'>"+
-					"<form action='/showCheck' ajax='true' ajax-success='populateCheckDialog'>"+
-						"<input type='hidden' name='_id' value='<%= _id %>'>"+
-						"<input type='hidden' name='checkNumb' value='<%= checkNumb %>'>"+
-						"<input type='submit' value='<%= checkNumb %>'>"+
+					"<form action='/showCheck/<%= _id %>' ajax='true' ajax-success='populateCheckDialog'>"+
+						"<input type='hidden' name='checkNumb' value='<%= checkNumb %>'/>"+
+						"<input type='submit' value='<%= checkNumb %>'/>"+
 					"</form>"+
 				"</td>"+
 				"<td class='checkClient'><%= clientFullName %></td>"+
 				"<td class='checkDate'><%= dateString %></td>"+
 				"<td class='checkAmount'><%= totalAmount %></td>"+
 			"</tr>"
-		);
-	},
+	),
+	editProduct: _.template(
+		"<div class='dialog editPopup' data-line-id='<%= lineId %>'>"+
+			"<div class='closeBtn'>close</div>"+
+			"<form action='/editProd/<%= lineId %>' ajax='true' ajax-success='prodEdited'>"+
+				"<input type='hidden' name='_id' value='<%= lineId %>'/>"+
+				"<div class='ws-field'>"+
+					"<label><%= title.label %></label>"+
+					"<input type='text' name='title' value='<%= title.val %>'/>"+
+				"</div>"+
+				"<div class='ws-field'>"+
+					"<label><%= qty.label %></label>"+
+					"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='numb'/>"+
+				"</div>"+
+				"<div class='ws-field'>"+
+					"<label><%= unit.label %></label>"+
+					"<select name='unit'>"+
+					"<% _.each(units, function(val){if(val == unit.val){%> <option value='<%= val %>' selected='selected'><%= val %></option> <%} else{%> <option value='<%= val %>'><%= val %></option> <%} }) %>"+
+					"</select>"+
+				"</div>"+
+				"<div class='ws-field'>"+
+					"<label><%= price.label %></label>"+
+					"<input type='text' name='price' value='<%= price.val %>'/>"+
+				"</div>"+
+				"<div class='ws-field'>"+
+					"<input type='submit' value='Змінити' />"+
+				"</div>"+
+			"</form>"+
+		"</div>"
+	)
 }

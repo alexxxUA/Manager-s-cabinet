@@ -355,6 +355,9 @@ td#tableThCoast,
 #tableUnit,
 #salesTableCoast{text-align:center;}
 /*Edit product popup*/
+#editProductPopup{
+	width: 175px;
+}
 #editProductPopup,
 .dialog{
 	display:none; 
@@ -362,7 +365,6 @@ td#tableThCoast,
 	border: 1px solid white;
 	padding: 20px;
 	background: #4D9CFF;
-	width: 175px;
 	color: white;
 	border-radius: 20px;
 	z-index:99;
@@ -370,7 +372,17 @@ td#tableThCoast,
 .dialog{
 	display: block;
 }
-#editProductPopup #applyEdits{
+.dialog input,
+.dialog select{
+	float: none;
+}
+.dialog input,
+.dialog select,
+.dialog label{
+	display: block;
+}
+#editProductPopup #applyEdits,
+.dialog [type=submit]{
 	background: #47D533;
 	color: white;
 	border: 1px solid white;
@@ -814,7 +826,8 @@ form .error,
 	top: 31px;
 	left: 173px;
 }
-#closeBtn{
+#closeBtn,
+.closeBtn{
 	text-indent: -999999px;
 	position: absolute;
 	top: -10px;

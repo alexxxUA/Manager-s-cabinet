@@ -1,0 +1,37 @@
+include jadeFunctions
+div.checkDetailsContainer
+	div.checkDetails
+		div.ws-field
+			span.label № Чеку:
+			span.value=checkNumb
+		div.ws-field
+			span.label Покупець:
+			span.value=clientFullName
+		div.ws-field
+			span.label Дата продажу:
+			span.value=getFormatedDate(date)
+
+	div.checkProdList
+		h2.tableTitle Список товарів
+		table.prodTable
+			thead
+				tr
+					th.tableTitle Назва товару
+					th.tableQty Кількість
+					th.tableUnit Одиниця виміру
+					th.tablePrice Ціна
+					th.tableCoast Сумма
+			tbody
+				-var totalAmount = 0;
+				each prod in prodList
+					-totalAmount += +prod.amount;
+					tr.t-field
+						td.tableTitle=prod.title
+						td.tableQty=prod.qty
+						td.tableUnit=prod.unit
+						td.tablePrice=prod.price
+						td.tableCoast=prod.amount
+				tr.checkAmount
+					td.totalText(colspan='3') Сумма чеку: 
+					td.totalAmount(colspan='2')=totalAmount
+

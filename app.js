@@ -296,12 +296,11 @@ app.get('/addProduct', function(req, res){
 				collection.find({userID : req.cookies.userID}).toArray(function(err, results){
 				});
 				if(results.length == 0){
-					var qty = +(req.query.qtyProd);
 					collection.insert({
 						title : req.query.nameProd,
-						qty : qty,
+						qty : +req.query.qtyProd,
 						unit : req.query.unit,
-						price : req.query.priceProd,
+						price : +req.query.priceProd,
 						userID : req.cookies.userID
 					});
 					console.log('Product added!');
@@ -315,25 +314,32 @@ app.get('/addProduct', function(req, res){
 		});
 	});
 });
+
 //Dell product from database
-app.get('/delProduct', function(req, res){
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('products', function(err, collection){
-			collection.remove({title : req.query.titleProd, userID : req.cookies.userID});
-		});
+app.get('/removeProd/:id', function(req, res){
+	isLoggedIn(req.cookies.userID);
+
+	MD.products.remove({userID: req.cookies.userID, _id: ObjectID(req.params.id)}, function(err, result){
+		res.send();		
 	});
-	res.send(req.query);
 });
 
-//Apply editing
-app.get('/applyEditing', function(req, res){
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('products', function(err, collection){
-			var qty = +(req.query.qtyProd);
-			collection.update({title : req.query.defaultProdName, userID : req.cookies.userID}, {$set: {title : req.query.nameProd, qty : qty, price : req.query.priceProd, unit: req.query.unitProd} });
-		});
+//Edit prod
+app.get('/editProd/:id', function(req, res){
+	isLoggedIn(req.cookies.userID);
+
+	var userID = req.cookies.userID,
+		prodID = req.params.id,
+		editProd = {
+			title : req.query.title,
+			qty : +req.query.qty,
+			price : +req.query.price,
+			unit: req.query.unit
+		};
+
+	MD.products.update({userID: userID, _id: ObjectID(prodID)}, {$set: editProd }, function(err, result){
+		res.send(editProd);		
 	});
-	res.send(req.query);
 });
 
 //Sales list
@@ -363,10 +369,10 @@ app.get('/salesPage', function(req, res){
 
 //Live search
 app.get('/search', function(req, res){
-	require('mongodb').connect(mongourl, function(err, db){
-		MD.products.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
-			res.send(results);
-		});
+	isLoggedIn(req.cookies.userID);
+
+	MD.products.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
+		res.send(results);
 	});
 });
 
@@ -424,6 +430,18 @@ app.get('/saleCheck', function(req, res){
 		res.send(result);
 	});
 
+});
+
+//Show check
+app.get('/showCheck/:id', function(req, res){
+	isLoggedIn(req.cookies.userID);
+
+	var userID = req.cookies.userID,
+		checkId = req.params.id;
+
+	MD.salesList.findOne({userID: userID, _id: ObjectID(checkId)}, function(err, result){
+		res.render('checkDetails.jade', result);
+	});
 });
 
 //Report

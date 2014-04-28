@@ -19,18 +19,7 @@ html
 		meta(name="revisit-after", content="1 days")
 		meta(name='yandex-verification', content='6bfa0fdbd4673e28')
 	body
-		-//Flour number
-		-function floorN(x, n){
-			-var numb = Number(x);
-			-return numb.toFixed(n);
-		-}
-		-function getFormatedDate(milisec){
-			-var d = new Date(milisec);
-			-var curDate = d.getDate();
-			-var curMonth = d.getMonth()+1;
-			-var curYear = d.getFullYear();
-			-return (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
-		-}
+		include jadeFunctions
 		#section-container
 			#header
 				h1

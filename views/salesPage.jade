@@ -43,25 +43,25 @@ block products
 								th.sProdSumm Сумма
 						tbody
 							tr(class='d-line-item', id='searchProdFrom')
-								td.sClienList.ws-field
+								td.sClienList.t-field
 									select(name='clientId', value='noName')
 										option(value='noName') Загальний
 										each client in clientList
 											option(value=client._id) #{client.firstName} #{client.lastName}
 									input(type='hidden', name='clientFullName', value='Загальний')
-								td.sProdName.ws-field
+								td.sProdName.t-field
 									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off", data-validate-type='attrVal ifAdded')
 									input(type='hidden', name='_id', id='searchProdId')
 									div#searchResults(style='display:none')
 										ul
-								td.ws-field
+								td.t-field
 									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off", data-validate-type='availQty')
 									input(type='hidden', name='maxQty', id='searchProdMaxQty')
-								td.ws-field
+								td.t-field
 									input(type='text', name='unit', placeholder='Одиниця Вимірювання', id='searchProdUnit', disabled='disabled')
-								td.ws-field
+								td.t-field
 									input(type='text', name='price', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-								td.ws-field
+								td.t-field
 									input(type='text', name='amount', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
 					input(type='submit', value='+Чек')
 				
@@ -92,12 +92,12 @@ block products
 						table#tableListCheck.prodTable
 							thead
 								tr
-									th.tableThTitle Назва товару
-									th.tableThQty Кількість
-									th.tableThUnit Одиниця Вимірювання
-									th.tableThPrice Ціна
-									th.tableThCoast Сумма
-									th.tableThActions Дії
+									th.tableTitle Назва товару
+									th.tableQty Кількість
+									th.tableUnit Одиниця Вимірювання
+									th.tablePrice Ціна
+									th.tableCoast Сумма
+									th.tableActions Дії
 							tbody
 								tr.checkAmount
 									td.totalText(colspan='3') Сумма чеку: 
@@ -119,8 +119,7 @@ block products
 							-totalAmount += +check.totalAmount;
 							tr.d-line-item(id=check._id)
 								td.cNumb
-									form(action='/showCheck', ajax='true', ajax-succes='populateCheckDialog')
-										input(type='hidden', name='_id', value=check._id)
+									form(action='/showCheck/#{check._id}', ajax='true', ajax-success='populateCheckDialog')
 										input(type='hidden', name='checkNumb', value=check.checkNumb)
 										input(type='submit', value=check.checkNumb)
 								td.checkClient=check.clientFullName

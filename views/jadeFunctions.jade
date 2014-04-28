@@ -1,0 +1,12 @@
+-//Flour number
+-function floorN(x, n){
+	-var numb = Number(x);
+	-return numb.toFixed(n);
+-}
+-function getFormatedDate(milisec){
+	-var d = new Date(milisec);
+	-var curDate = d.getDate();
+	-var curMonth = d.getMonth()+1;
+	-var curYear = d.getFullYear();
+	-return (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
+-}
