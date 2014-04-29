@@ -64,6 +64,17 @@ var T = {
 	getFormatedDate: function(){
 
 	},
+	//Date format example: "month/day/year"
+	getMilisecFromString: function(dataString, tZone){
+		var date = dataString.split('/'),
+			yearFrom = +reportDateFrom[2],
+			monthFrom = +reportDateFrom[0]-1,
+			dayFrom = +reportDateFrom[1],
+			time = new Date(this.months[monthFrom]+' '+dayFrom+', '+yearFrom+' 00:00:01 GMT+'+tZone+'00');
+
+		
+		return time.getTime();
+	},
 	getTimeWithOffset: function(tZone, milisec){
 		var dObject = this.getDataObj(tZone, milisec),
 			curTime = new Date(this.months[dObject.curMonth]+' '+dObject.curDate+', '+dObject.curYear+' '+ dObject.curHours +':'+ dObject.curMinutes +':01 GMT+'+tZone+'00');
@@ -406,7 +417,7 @@ app.get('/saleCheck', function(req, res){
 			newProdList.push(prod);
 			
 			//Update product - reduce qty
-			MD.products.update({userID : userID, _id: ObjectID(prodList[prodListLength]._id.val)}, {$inc: {qty : -prod.qty}}, function(err, result){
+			MD.products.update({userID : userID, _id: ObjectID(prodList[prodListLength]._id.val)}, {$inc: {qty : -prod.qty, soldQty: +prod.qty}}, function(err, result){
 				if(err) throw err;
 			});
 		})(prodListLength);
@@ -446,23 +457,24 @@ app.get('/showCheck/:id', function(req, res){
 
 //Report
 app.get('/report', function(req, res){
-	if(typeof(req.cookies.userID) !== 'undefined'){
-		res.render('report.jade', {user : req.cookies.login, day : req.cookies.day});
-	}
-	else{
-		res.redirect('/');
-	}
+	isLoggedIn(req.cookies.userID);
+
+	var userID = req.cookies.userID,
+		renderData = {
+			user : req.cookies.login,
+			userID : req.cookies.userID,
+			day : req.cookies.day
+		};
+
+	MD.clients.find({userID: userID}).toArray(function(err, results){
+		renderData.clientList = results;
+		res.render('report.jade', renderData);
+	});
 });
 
 //Render report list
 app.get('/renderReportList', function(req, res){
 	var reportDateFrom = (req.query.reportDateFrom).split('/'),
-		yearFrom = +reportDateFrom[2],
-		monthFrom = +reportDateFrom[0]-1,
-		dayFrom = +reportDateFrom[1],
-		timeZone = req.cookies.timeZone,
-		months = ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-		setTimeReportFrom = new Date(months[monthFrom]+' '+dayFrom+', '+yearFrom+' 00:00:01 GMT+'+timeZone+'00'),
 		MILISECONDSsetTimeReportFrom = setTimeReportFrom.getTime();
 
 		if(req.query.reportDaysTill.length == 0){
@@ -516,14 +528,21 @@ app.get('/clients', function(req, res){
 app.get('/client/:id', function(req, res){
 	if(typeof(req.cookies.userID) == 'undefined')
 		res.redirect('/');
+	
+	var userID = req.cookies.userID,
+		clientID = req.params.id,
+		data = {
+			user : req.cookies.login,
+			day : req.cookies.day
+		}
 
-		MD.clients.findOne({_id: ObjectID(req.params.id)}, function(err, results){
-			res.render('client.jade', {
-				clientDet: results,
-				user : req.cookies.login,
-				day : req.cookies.day
-			});
+	MD.clients.findOne({_id: ObjectID(clientID)}, function(err, results){
+		data.clientDet = results;
+		MD.salesList.find({userID : userID, clientID: clientID}).toArray(function(err, results){
+			data.salesList = results;
+			res.render('client.jade', data);
 		});
+	});
 
 });
 

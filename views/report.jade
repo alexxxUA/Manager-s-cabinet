@@ -21,31 +21,34 @@ block home
 			li(class='active')
 				a(href='/report', class='reportLink') Генерація звіту
 
-block products
+block mainContent
 	#rightSide
-		div#getReport
-			h2(class="tableTitle") Генерація звіту по вибраним датам
-			h2(class="reportTitle", style="display:none") Звіт по вибраними датам:
-			div#getReportForm(class='clearfix')
-				h3
-					span Звіт
-					strong від:
-				input#datepicker
-				h3 по:
-				input#datepicker2
-				input(type='submit', id='generateReport', value='Згенерувати')
-				a(id="clearReportList", href="#", title="Очистити") Очистити
-				a(id="print", href="javascript:window.print();", title="Печать") Печать
+		div.getReport
+			h2(class="reportTitle") Отримання статистичних даних
+			div.reportForm(class='clearfix')
+				form(action='/getReport', ajax='true', ajax-success='renderReport')
+					div.d-line-item
+						label Клієнт
+						select(name='clientId', value='noName')
+							option(value='noName') Загальний
+							each client in clientList
+								option(value=client._id) #{client.firstName} #{client.lastName}
+						input(type='hidden', name='clientFullName', value='Загальний')
+					div.d-line-item
+						label Період з
+						input#datepicker(type='text')
+					div.d-line-item
+						label Період по
+						input#datepicker2(type='text')
+					div.d-line-item
+						label Тип отриманих даних
+						select(name='reportType', value='popularProduct')
+							option(value='popularProduct') Найпопулярныший товар
+							option(value='salesStatistic') Статистика продажу
+							option(value='salesProducts') Продані товари
+					div.d-line-item
+						input.generateReport(type='submit', value='Згенерувати')
+					a(id="clearReportResults", href="#", title="Очистити") Очистити
+					a(id="print", href="javascript:window.print();", title="Печать") Печать
+			div.reportResults
 			div#errorReport
-			div#reportList(style='display:none')
-				table
-					thead
-						tr
-							th(id='tableThTitle') Назва товару
-							th(id='tableThQty') Кількість
-							th(id='tableThPrice') Ціна
-							th(id='tableThCoast') Сумма
-					tbody
-				div#salings
-					div#reportSumm
-					div#salingsText Загальна сума:
