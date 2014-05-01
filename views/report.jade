@@ -30,22 +30,23 @@ block mainContent
 					div.d-line-item
 						label Клієнт
 						select(name='clientId', value='noName')
+							option(value='') Всі клієнти
 							option(value='noName') Загальний
 							each client in clientList
 								option(value=client._id) #{client.firstName} #{client.lastName}
 						input(type='hidden', name='clientFullName', value='Загальний')
 					div.d-line-item
 						label Період з
-						input#datepicker(type='text')
+						input#datepicker(type='text', name='timeFrom')
 					div.d-line-item
 						label Період по
-						input#datepicker2(type='text')
+						input#datepicker2(type='text', name='timeTill')
 					div.d-line-item
 						label Тип отриманих даних
 						select(name='reportType', value='popularProduct')
 							option(value='popularProduct') Найпопулярныший товар
 							option(value='salesStatistic') Статистика продажу
-							option(value='salesProducts') Продані товари
+							option(value='salesChecks', selected='selected') Реалізовані чеки
 					div.d-line-item
 						input.generateReport(type='submit', value='Згенерувати')
 					a(id="clearReportResults", href="#", title="Очистити") Очистити

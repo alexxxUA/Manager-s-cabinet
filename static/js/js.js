@@ -1366,12 +1366,15 @@ function saleCheck(e){
 	});
 }
 
-function populateCheckDialog(request, $form){
-	
+function populateCheckDialog(request, $form){	
 	var checkList = templates.dialog({templateContent: request});
 	Dialog.show(checkList);
 }
-
+function renderReport(request, $form){
+	var $reportResults = $('.reportResults');
+	
+	$reportResults.html(request);
+}
 //Inits
 Dialog.init();
 Validator.init();

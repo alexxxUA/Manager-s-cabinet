@@ -67,11 +67,10 @@ var T = {
 	//Date format example: "month/day/year"
 	getMilisecFromString: function(dataString, tZone){
 		var date = dataString.split('/'),
-			yearFrom = +reportDateFrom[2],
-			monthFrom = +reportDateFrom[0]-1,
-			dayFrom = +reportDateFrom[1],
+			yearFrom = +date[2],
+			monthFrom = +date[0]-1,
+			dayFrom = +date[1],
 			time = new Date(this.months[monthFrom]+' '+dayFrom+', '+yearFrom+' 00:00:01 GMT+'+tZone+'00');
-
 		
 		return time.getTime();
 	},
@@ -455,7 +454,7 @@ app.get('/showCheck/:id', function(req, res){
 	});
 });
 
-//Report
+//Report page
 app.get('/report', function(req, res){
 	isLoggedIn(req.cookies.userID);
 
@@ -472,32 +471,49 @@ app.get('/report', function(req, res){
 	});
 });
 
-//Render report list
-app.get('/renderReportList', function(req, res){
-	var reportDateFrom = (req.query.reportDateFrom).split('/'),
-		MILISECONDSsetTimeReportFrom = setTimeReportFrom.getTime();
+//Get report
+app.get('/getReport', function(req, res){
+	isLoggedIn(req.cookies.userID);
 
-		if(req.query.reportDaysTill.length == 0){
-			var setTimeReportTill = new Date(months[monthFrom]+' '+dayFrom+', '+yearFrom+' 23:59:59 GMT+'+timeZone+'00'),
-				MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
-			
-			MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
-				res.send(results);
+	var clientID = req.query.clientId.length > 0 ? '' : req.query.clientId,
+		reportType = req.query.reportType,
+		tZone = req.cookies.timeZone,
+		rangeTime = {
+			start: req.query.timeFrom.length > 0 ? T.getTimeMorning(tZone, T.getMilisecFromString(req.query.timeFrom, tZone)) : T.getTimeMorning(tZone), 
+			end: req.query.timeTill.length > 0 ? T.getTimeEvning(tZone, T.getMilisecFromString(req.query.timeTill, tZone)) : T.getTimeEvning(tZone)
+		},
+		dbQuery = {
+			userID: req.cookies.userID,
+			date: {
+				$gte: rangeTime.start,
+				$lte: rangeTime.end
+			}
+		};
+
+	switch (reportType){
+		case 'popularProduct':
+			console.log('popularProduct');
+			MD.salesList.find({});
+			break;
+		case 'salesStatistic':
+			console.log('salesStatistic');
+			break;
+		case 'salesChecks':
+			console.log('salesChecks');
+			if(req.query.clientId.length > 0)
+				dbQuery.clientID = req.query.clientId;
+			MD.salesList.find(dbQuery).sort({date: 1}).toArray(function(err, results){
+				console.log(results);
+				res.render('rCheckList.jade', {salesList: results, dFrom: rangeTime.start, dTill: rangeTime.end});
 			});
-		}
-		else{
-			var reportDaysTill = (req.query.reportDaysTill).split('/'),
-				yearTill = +reportDaysTill[2],
-				monthTill = +reportDaysTill[0]-1,
-				dayTill = +reportDaysTill[1],
-				setTimeReportTill = new Date(months[monthTill]+' '+dayTill+', '+yearTill+' 23:59:59 GMT+'+timeZone+'00'),
-				MILISECONDSsetTimeReportTill = setTimeReportTill.getTime();
-			
-			MD.salesList.find({userID : req.cookies.userID, day: {$gte: MILISECONDSsetTimeReportFrom, $lte: MILISECONDSsetTimeReportTill } } ).sort({day: 1}).toArray(function(err, results){
-				res.send(results);
-			});
-		}
+			break;
+	}
+	console.log('Start: '+ rangeTime.start +';  End: '+ rangeTime.end +'\n-----------------------------------------');
+
+	//res.send();
 });
+
+
 app.get('/clearSalesList', function(req, res){
 	MD.salesList.remove({userID : req.cookies.userID}, function(err, result){
 		if(!err){
