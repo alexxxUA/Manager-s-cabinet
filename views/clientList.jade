@@ -6,7 +6,7 @@ div(class="clientList")
                     th День народження
                     th Email
                     th Телефон
-                    th(class='actionBtnsTh') Дії
+                    th(class='actionBtns') Дії
             tbody
                 each client, i in clients
                     tr(class='d-line-item', id=client._id)
@@ -21,8 +21,8 @@ div(class="clientList")
                             span(data-name='email', data-val=client.email, data-label='Email')=client.email
                         td
                             span(data-name='tel', data-val=client.tel, data-label='Телефон')=client.tel
-                        td(class='actionBtnsTd')
-                            a(href='/editClient', class='dialogData', dialog-template='editClient', clientid=client._id) Змінити
+                        td(class='actionBtns')
+                            a(href='/editClient', class='edit dialogData', dialog-template='editClient', clientid=client._id) Змінити
                             form(action='/removeClient', ajax='true', ajax-success='removeLineItem')
                                 input(type='hidden', name='clientId', value=client._id)
                                 input(type='submit', class='del', value='Видалити')

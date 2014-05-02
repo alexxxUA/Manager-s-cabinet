@@ -2,7 +2,7 @@ include jadeFunctions
 table(class='salesTableList soldCheckList')
 	thead
 		tr
-			th.cNumber № чеку
+			th.cNumb № чеку
 			th.cClient Покупець
 			th.cDate Дата
 			th.cAmount Сума
@@ -15,10 +15,10 @@ table(class='salesTableList soldCheckList')
 					form(action='/showCheck/#{check._id}', ajax='true', ajax-success='populateCheckDialog')
 						input(type='hidden', name='checkNumb', value=check.checkNumb)
 						input(type='submit', value=check.checkNumb)
-				td.checkClient=check.clientFullName
-				td.checkDate=getFormatedDate(check.date)
-				td.checkAmount=check.totalAmount
+				td.cClient=check.clientFullName
+				td.cDate=getFormatedDate(check.date)
+				td.cAmount=floorN(check.totalAmount, 2)
 
-		tr.checkAmount
-			td.totalText(colspan='3') Загальна сумма: 
-			td.totalAmount=totalAmount
+		tr.tableAmount
+			td.totalText(colspan='3') Загальна сума: 
+			td.totalAmount=floorN(totalAmount, 2)

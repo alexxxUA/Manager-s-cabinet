@@ -4,6 +4,7 @@
 	email   	= require("emailjs"),
 	fs 			= require("fs"),
 	mime 		= require('mime'),
+	jade		= require('jade'),
 	mongodb     = require('mongodb');
 
 var mongo = {},
@@ -107,6 +108,7 @@ function isLoggedIn(userID){
 	if(typeof userID == 'undefined')
 		res.redirect('/');
 }
+
 //set path to the views (template) directory
 app.set('views', __dirname + '/views');
 
@@ -274,55 +276,43 @@ app.get('/admin', function(req, res){
 
 //Home page
 app.get('/home', function(req, res){
-	if(typeof(req.cookies.userID) !== 'undefined'){
-		require('mongodb').connect(mongourl, function(err, db){
-			db.collection('users', function(err, collection){
-				collection.find({_id : ObjectID(req.cookies.userID)}).toArray(function(err, results){
-					var userLogin = results[0].login;
-					res.cookie('login', results[0].login, { path: '/', expires: new Date(Date.now() + 900000000), httpOnly: true });
+	isLoggedIn(req.cookies.userID);
+	
+	MD.users.findOne({_id : ObjectID(req.cookies.userID)}, function(err, result){
+		var userLogin = result.login;
+		res.cookie('login', result.login, { path: '/', expires: new Date(Date.now() + 900000000), httpOnly: true });
 
-					//Render Product list
-					require('mongodb').connect(mongourl, function(err, db){
-						db.collection('products', function(err, collection){
-							collection.find({userID : req.cookies.userID}).toArray(function(err, results){
-								res.render('home.jade', {user : userLogin, userID : req.cookies.userID, productsList : results, day : req.cookies.day});
-							});
-						});
-					});
-				});
-			});
+		//Render Product list
+		MD.products.find({userID : req.cookies.userID}).sort({_id: -1}).toArray(function(err, results){
+			res.render('home.jade', {user : userLogin, userID : req.cookies.userID, productsList : results, day : req.cookies.day});
 		});
-	}
-	else{
-		res.redirect('/');
-	}
+	});
 });
 
 //Add product
 app.get('/addProduct', function(req, res){
-	require('mongodb').connect(mongourl, function(err, db){
-		db.collection('products', function(err, collection){
-			collection.find({title : req.query.nameProd, userID : req.cookies.userID}).toArray(function(err, results){
-				collection.find({userID : req.cookies.userID}).toArray(function(err, results){
-				});
-				if(results.length == 0){
-					collection.insert({
-						title : req.query.nameProd,
-						qty : +req.query.qtyProd,
-						unit : req.query.unit,
-						price : +req.query.priceProd,
-						userID : req.cookies.userID
-					});
-					console.log('Product added!');
-					res.send(req.query);
-				}
-				else{
-					console.log('This product is exist!');
-					res.send(false);
-				}
+	isLoggedIn(req.cookies.userID);
+
+	var resDAta = {};
+
+	MD.products.find({title : {$regex: '^'+ req.query.title +'$', $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
+		if(results.length > 0){
+			resDAta.error = 'This product is exist!';
+			res.send(resDAta);
+		}
+		else{
+			MD.products.insert({
+				title : req.query.title,
+				qty : +req.query.qty,
+				unit : req.query.unit,
+				price : +req.query.price,
+				userID : req.cookies.userID
+			}, function(err, results){
+				res.send(results[0]);
 			});
-		});
+		}
 	});
+		
 });
 
 //Dell product from database
@@ -488,29 +478,44 @@ app.get('/getReport', function(req, res){
 				$gte: rangeTime.start,
 				$lte: rangeTime.end
 			}
+		},
+		sendData = {
+			reportType: reportType,
+			dFrom: rangeTime.start,
+			dTill: rangeTime.end
 		};
+
+	if(req.query.clientId.length > 0)
+		dbQuery.clientID = req.query.clientId;
 
 	switch (reportType){
 		case 'popularProduct':
 			console.log('popularProduct');
-			MD.salesList.find({});
 			break;
 		case 'salesStatistic':
-			console.log('salesStatistic');
+			MD.salesList.find(dbQuery).sort({date: 1}).toArray(function(err, results){				
+				jade.renderFile('views/rSalesStatistic.jade', {salesList: results, dFrom: rangeTime.start, dTill: rangeTime.end}, function(err, html){
+					if(err) throw err;
+					sendData.html = html;
+					sendData.callback = reportType;
+					sendData.salesList = results;
+					
+					res.send(sendData);
+				});
+			});
 			break;
 		case 'salesChecks':
-			console.log('salesChecks');
-			if(req.query.clientId.length > 0)
-				dbQuery.clientID = req.query.clientId;
 			MD.salesList.find(dbQuery).sort({date: 1}).toArray(function(err, results){
-				console.log(results);
-				res.render('rCheckList.jade', {salesList: results, dFrom: rangeTime.start, dTill: rangeTime.end});
+				jade.renderFile('views/rCheckList.jade', {salesList: results, dFrom: rangeTime.start, dTill: rangeTime.end}, function(err, html){
+					if(err) throw err;
+					sendData.html = html;
+					
+					res.send(sendData);
+				});
 			});
 			break;
 	}
-	console.log('Start: '+ rangeTime.start +';  End: '+ rangeTime.end +'\n-----------------------------------------');
-
-	//res.send();
+	//console.log('Start: '+ rangeTime.start +';  End: '+ rangeTime.end +'\n-----------------------------------------');
 });
 
 

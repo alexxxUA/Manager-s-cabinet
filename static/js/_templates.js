@@ -54,8 +54,8 @@ var templates = {
 				"<td>"+
 					"<span data-name='tel' data-val='<%= tel %>' data-label='Телефон'><%= tel %></span>"+
 				"</td>"+
-				"<td>"+
-					"<a href='#' class='dialogData' dialog-template='editClient' clientid='<%= _id %>'>Змінити</a>"+
+				"<td class='actionBtns'>"+
+					"<a href='#' class='edit dialogData' dialog-template='editClient' clientid='<%= _id %>'>Змінити</a>"+
 					"<form action='/removeClient' ajax='true' ajax-success='removeLineItem'>"+
 						"<input type='hidden' name='clientId' value='<%= _id %>'>"+
 						"<input type='submit' class='del' value='Видалити'>"+
@@ -65,26 +65,52 @@ var templates = {
 	),
 	productListItem: _.template(
 			"<tr class='d-line-item', id='<%=_id%>''>"+
-				"<td id='tableTitle'>"+
+				"<td class='tableTitle'>"+
 					"<span data-name='title' data-val='<%=title%>' data-label='Назва продукту'><%=title%></span>"+
 					"<span class='hidden' data-name='_id' data-val='<%=_id%>', data-label='Id'></span>"+
 				"</td>"+
-				"<td id='tableQty'>"+
+				"<td class='tableQty'>"+
 					"<span data-name='qty' data-val='<%=qty%>' data-label='Кількість'><%=qty%></span>"+
 					"<span class='hidden' data-name='maxQty' data-val='<%=maxQty%>' data-label=' Максимальна кількість '><%=maxQty%></span>"+
 				"</td>"+
-				"<td id='tableUnit'>"+
+				"<td class='tableUnit'>"+
 					"<span data-name='unit' data-val='<%=unit%>' data-label='Одиниця вимірювання'><%=unit%></span>"+
 				"</td>"+
-				"<td id='tablePrice'>"+
+				"<td class='tablePrice'>"+
 					"<span data-name='price' data-val='<%=price%>' data-label='Ціна'><%=price%></span>"+
 				"</td>"+
-				"<td id='tableCoast'>"+
+				"<td class='tableCoast'>"+
 					"<span data-name='amount' data-val='<%=amount%>' data-label='Сума'><%=amount%></span>"+
 				"</td>"+
-				"<td id='tableActions'>"+
+				"<td class='tableActions'>"+
 					"<a href='#' class='dialogData' dialog-template='editProductInCheck' prodid='<%= _id %>'>Змінити</a>"+
 					"<input type='button' id='Del' name='<%=title%>' value='Видалити'>"+
+				"</td>"+
+			"</tr>"
+	),
+	addedProductListItem: _.template(
+			"<tr class='d-line-item', id='<%=_id%>''>"+
+				"<td class='tableTitle'>"+
+					"<span data-name='title' data-val='<%=title%>' data-label='Назва продукту'><%=title%></span>"+
+				"</td>"+
+				"<td class='tableQty'>"+
+					"<span data-name='qty' data-val='<%=qty%>' data-label='Кількість'><%=qty%></span>"+
+				"</td>"+
+				"<td class='tableUnit'>"+
+					"<span data-name='unit' data-val='<%=unit%>' data-label='Одиниця вимірювання'><%=unit%></span>"+
+				"</td>"+
+				"<td class='tablePrice'>"+
+					"<span data-name='price' data-val='<%=price%>' data-label='Ціна'><%=price%></span>"+
+				"</td>"+
+				"<td class='tableCoast'>"+
+					"<span data-name='amount' data-val='<%=amount%>' data-label='Сума'><%=amount%></span>"+
+				"</td>"+
+				"<td class='tableActions'>"+
+					"<a href='#' class='edit dialogData' dialog-template='editProduct' dialog-before-show='editProdDialog'>Змінити</a>"+
+					"<form action='/removeProd/<%= _id %>' ajax='true' ajax-success='removeLineItem'>"+
+						"<input type='hidden' name='_id' value='<%= _id %>'/>"+
+						"<input type='submit' class='del' value='Видалити'/>"+
+					"</form>"+
 				"</td>"+
 			"</tr>"
 	),
@@ -99,7 +125,7 @@ var templates = {
 					"</div>"+
 					"<div class='ws-field'>"+
 						"<label><%= qty.label %></label>"+
-						"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='availQty' data-prev-val='<%= qty.val %>' data-max-qty='<%= maxQty.val %>' />"+
+						"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='availQty floatNumb' data-prev-val='<%= qty.val %>' data-max-qty='<%= maxQty.val %>' />"+
 					"</div>"+
 					"<div class='ws-field'>"+
 						"<label><%= unit.label %></label>"+
@@ -139,7 +165,7 @@ var templates = {
 				"</div>"+
 				"<div class='ws-field'>"+
 					"<label><%= qty.label %></label>"+
-					"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='numb'/>"+
+					"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='floatNumb'/>"+
 				"</div>"+
 				"<div class='ws-field'>"+
 					"<label><%= unit.label %></label>"+
@@ -149,7 +175,7 @@ var templates = {
 				"</div>"+
 				"<div class='ws-field'>"+
 					"<label><%= price.label %></label>"+
-					"<input type='text' name='price' value='<%= price.val %>'/>"+
+					"<input type='text' name='price' value='<%= price.val %>'  data-validate-type='floatNumb'/>"+
 				"</div>"+
 				"<div class='ws-field'>"+
 					"<input type='submit' value='Змінити' />"+

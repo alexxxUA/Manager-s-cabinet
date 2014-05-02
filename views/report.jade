@@ -1,4 +1,8 @@
 ﻿extends layout
+block script
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="excanvas.min.js"></script><![endif]-->
+	script(src='/js/jquery.flot.js')
+	script(src='/js/jquery.flot.time.js')
 block home
 	#leftSide
 		h4#day Сьогодні: #{day}
@@ -45,11 +49,11 @@ block mainContent
 						label Тип отриманих даних
 						select(name='reportType', value='popularProduct')
 							option(value='popularProduct') Найпопулярныший товар
-							option(value='salesStatistic') Статистика продажу
-							option(value='salesChecks', selected='selected') Реалізовані чеки
+							option(value='salesStatistic', selected='selected') Статистика продажу
+							option(value='salesChecks') Реалізовані чеки
 					div.d-line-item
 						input.generateReport(type='submit', value='Згенерувати')
-					a(id="clearReportResults", href="#", title="Очистити") Очистити
+					a#clearReportResults.del(href="#", title="Очистити") Очистити
 					a(id="print", href="javascript:window.print();", title="Печать") Печать
 			div.reportResults
 			div#errorReport

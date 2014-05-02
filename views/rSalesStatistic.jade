@@ -1,0 +1,15 @@
+include jadeFunctions
+h3.reportTitle
+	span Графік статистики продажу 
+	-var dFromString = getFormatedDate(dFrom);
+	-var dTillString = getFormatedDate(dTill);	
+	-if(dFromString == dTillString){
+		span.date станом на дату #{dFromString}	
+	-}else{
+		span.date станом на період з #{dFromString} по #{dTillString}
+	-}
+-if(salesList.length > 0){
+	div.salesGraph
+-}else{
+	div.mainError Продажі за вибраний період не знайдені.
+-}

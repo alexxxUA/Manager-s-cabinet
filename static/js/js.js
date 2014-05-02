@@ -31,11 +31,11 @@ function setTimeCookie(){
 		curMonth = d.getMonth()+1,
 		curYear = d.getFullYear();
 
-	var curDay = (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
+	curDay = (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
 	//Time in miliseconds
-	var mSeconds = d.getTime();
+	mSeconds = d.getTime();
 	//Time zone
-	var	timeZone = -d.getTimezoneOffset()/60;
+	timeZone = -d.getTimezoneOffset()/60;
 	//Record times in cookies
 	$.cookie('day', curDay);
 	$.cookie('mSeconds', mSeconds);
@@ -71,23 +71,6 @@ function fadeoutErrMsgs(){
 	$('#searchProdErrorQty, #searchProdErrorExist, #searchProdErrorQty2, #searchProdErrorExistInCheck').fadeOut(200);
 }
 
-//Function check ADD and EDIT form
-function checkAddEditForm(formID, data, checkMaxQty){
-	$.each(data, function(i, val){
-		if(val.length == 0){
-			$('#'+i).addClass('error');
-		}
-		else if(i == 'qtyProd' || i == 'priceProd'){
-			if(!(regexpFloatNumber.test(val))){
-				$('#'+formID+' #'+i).addClass('error');
-			}
-		}
-		else if(typeof(checkMaxQty) !== 'undefined' && checkMaxQty !== 0 && +checkMaxQty < +data.qtyProd){
-			$('#'+formID+' #qtyProd').addClass('error');
-		}
-	});
-};
-
 //Forgot password
 function sendDataForgotPass(data){
 	$('#loading').css('display', 'block');
@@ -110,6 +93,7 @@ function sendDataForgotPass(data){
 		}
 	});
 }
+
 function collectSendDataForgotPass(){
 	var data = {};
 	data.email = $('#forgotEmail').val();
@@ -135,37 +119,6 @@ $('#forgotPassLink').on('click', function(e){
 	$('#modalWindow').css('display' , 'block');
 });
 
-//Edit prod poup
-function editPRoduct(e){
-	var yPos = e.pageY-15,
-		xPos = e.pageX,
-		editPopup = $('#editProductPopup');
-
-	var	getParentTr =$(e.target).closest('tr'),
-		popup = $('#editProductPopup'),
-		editProdData = {};
-
-	$(getParentTr).attr('id' , 'tempEditProd');
-
-	editProdData.editTitleProd = $(getParentTr).find('#tableTitle').text();
-	editProdData.editPriceProd = $(getParentTr).find('#tablePrice').text();
-	editProdData.editUnit = $(getParentTr).find('#tableUnit').text();
-	editProdData.editQtyProd = $(getParentTr).find('#tableQty').text();
-	editProdData.editMaxQty = $(getParentTr).find('#tableTitle').attr('maxQty');
-
-	$(popup).find('#nameProd').attr({'name' : editProdData.editTitleProd, 'maxQty' : editProdData.editMaxQty, 'qty' : editProdData.editQtyProd});
-	$(popup).find('#nameProd').val(editProdData.editTitleProd);
-	$(popup).find('#unitProd [value=' +editProdData.editUnit+ ']').attr("selected", "selected");
-	$(popup).find('#priceProd').val(editProdData.editPriceProd);
-	$(popup).find('#qtyProd').val(editProdData.editQtyProd);
-
-
-	$(editPopup).css({'top': yPos, 'left' : xPos});
-	$(editPopup).slideDown(400);
-	$('#modalWindow').css('display', 'block');
-	$('#editProductWraper #nameProd').focus();
-}
-
 //Function chose searched item
 function selectSearched(){
 	var selectedAttr = $('#searchResults .selected').attr('id');
@@ -180,7 +133,7 @@ function selectSearched(){
 	
 	$('#searchResults').css('display', 'none');
 	$('#searchProd').val(searchChosenTitle).attr({'data-val': searchChosenTitle, 'data-id': searchChosenId});
-	$('#searchProdPrice').val(searchChosenPrice);
+	$('#searchProdPrice').val(floorN(searchChosenPrice, 2));
 	$('#searchProdUnit').val(searchChosenUnit);
 	$('#searchProdId').val(searchChosenId);
 	$('#searchProdQty, #searchProdSumm').val('');
@@ -192,332 +145,6 @@ function selectSearched(){
 	setTimeout(function(){
 		$('#searchProdQty').focus();
 	}, 100);
-};
-
-//Add product to list
-function addProductToList(prodName, prodQty, prodPrice, prodUnit, tableID, addForm, maxQty){
-	var productListItem = "<tr style='display:none'>"+
-		"<td id='tableTitle' maxQty='"+maxQty+"'>"+prodName+"</td>"+
-		"<td id='tableQty'>"+floorN(prodQty, 2)+"</td>"+
-		"<td id='tableUnit'>"+prodUnit+"</td>"+
-		"<td id='tablePrice'>"+floorN(prodPrice, 2)+"</td>"+
-		"<td id='tableCoast'>"+floorN(prodQty*prodPrice, 2)+"</td>"+
-		"<td id='tableActions'>"+
-			"<input type='button' id='Edit' name='"+prodName+"' value='Edit'>"+
-			"<input type='button' id='Del' name='"+prodName+"' value='Delete'>"+
-		"</td>"+
-		"</tr>";
-
-	$('#'+tableID+'').append(productListItem);
-	$('#'+tableID+' tbody tr:last-child').fadeIn(400);
-	$('#tableListError').css('display', 'none');
-
-	if(addForm == true){
-		//Clear fields
-		$('#addProducForm [type="text"]').val('');
-		//Succes icon
-		$('#addProdTitle').addClass('success');
-		setTimeout(function(){
-			$('#addProdTitle').removeClass('success');					
-		}, 500);
-		$('#nameProd').focus();
-	}
-	else if(addForm == false){
-		var chunkSummCheck = +$('#salingsValueCheck').text();
-		$('#checkList').slideDown();
-		$('#salingsValueCheck').text(floorN(chunkSummCheck+(prodQty*prodPrice), 2));
-	}
-}
-
-//Add to sales list
-function addSaleList(dat, kindTable, soldType){
-	$('#errorAjax').css('display', 'none');
-	fadeoutErrMsgs();
-	var data = {};
-
-	if(kindTable == 'checkList'){
-
-		data.titleSold = dat.titleSold;
-		data.qtySold = dat.qtySold;
-		data.priceSold = dat.priceSold;
-		data.sold = soldType;
-
-		if($('#searchProd').val().length == 0){
-			$('#searchProdErrorExist').slideDown(200);
-		}
-		else if(regexpFloatNumber.test(data.qtySold)){
-			$loadingItem.css('display', 'block');
-			$.ajax({
-				type: 'GET',
-				url: '/addToSaleList',
-				data: data,
-				success: function(request) {
-					$('#loading').css('display', 'none');
-					if(request == 'sold'){
-						var checkExistingProduct = true; //Check existing product in check
-						$('#checkList tbody tr').each(function(index){
-							var titleSold = $(this).find('#tableTitle').text();
-							if(titleSold == data.titleSold){
-								checkExistingProduct = false;
-							}
-						});
-						if(checkExistingProduct){
-							var maxQty = $('#searchProd').attr('maxQty');
-							addProductToList(data.titleSold, data.qtySold, data.priceSold, 'tableListCheck', false, maxQty);
-
-							//Clear inputs
-							$('#searchProd, #searchProdQty, #searchProdPrice, #searchProdSumm').val('');
-							$('#searchProd').focus();
-						}
-						else{
-							$('#searchProdErrorExistInCheck').slideDown(200);
-						}
-					}
-					else if(request == 'qty'){
-						$('#searchProdErrorQty .availableCount').text(function(){
-							return ' '+floorN( +$('#searchProd').attr('maxqty'), 2);
-						});
-						$('#searchProdErrorQty').slideDown(200);
-					}
-					else if(request == 'title'){
-						$('#searchProdErrorExist').slideDown(200);
-					}
-				},
-				error : function(){
-					$('#loading').css('display', 'none');
-					$('#errorAjax').css('display', 'block');
-				}
-			});
-		}
-		else{
-			$('#searchProdErrorQty2').slideDown(200);
-		}
-	}
-	else if(kindTable == 'saleList'){
-		data.arrCheckList = dat;
-		data.sold = soldType;
-		data.mSeconds = setTimeCookie();
-		$loadingItem.css('display', 'block');
-		$.ajax({
-			type: 'GET',
-			url: '/addToSaleList',
-			data: data,
-			success: function(request) {
-				$('#loading').css('display', 'none');
-				if(request == 'sold'){
-					var chekList = data.arrCheckList;
-
-					for(var i=0; i < chekList.length; i++){
-						var qtySold = +(chekList[i].qtySold),
-							titleSold = chekList[i].titleSold,
-							priceSold = +(chekList[i].priceSold);
-
-						var saleTableItem = '<tr style="display:none">'+
-							'<td id="salesTableTitle">'+titleSold+'</td>'+
-							'<td id="salesTableQty">'+floorN(qtySold, 2)+'</td>'+
-							'<td id="salesTablePrice">'+floorN(priceSold, 2)+'</td>'+
-							'<td id="salesTableCoast">'+floorN((qtySold*priceSold), 2)+'</td>'+
-							'</tr>';
-
-						$('#salesTableList tbody').append(saleTableItem);
-						$('#salesTableList tbody tr:last-child').fadeIn(200);
-						$('#salingsValue').text(function(index, text){
-							var chunkSumm = qtySold*priceSold;
-							return floorN((+text+chunkSumm), 2);
-						});
-						$('#checkList').slideUp();
-						$('#checkList #tableListCheck tbody tr').remove();
-					}
-
-				}
-			},
-			error : function(){
-				$('#loading').css('display', 'none');
-				$('#errorAjax').css('display', 'block');
-			}
-		});
-	}
-}
-//Display editings in table
-function renderEditings(data){
-	$('#tempEditProd #tableTitle').text(data.nameProd);
-	$('#tempEditProd #tableQty').text(floorN(data.qtyProd, 2));
-	$('#tempEditProd #tablePrice').text(floorN(data.priceProd, 2));
-	$('#tempEditProd #tableCoast').text(floorN(data.qtyProd*data.priceProd, 2));
-	$('#tempEditProd #tableUnit').text(data.unitProd);
-	$('#tempEditProd').removeAttr('id');
-	$('#editProductPopup').slideUp(300);
-	$('#modalWindow').css('display', 'none');
-}
-
-//Apply editing product
-function applyEditings(changeProductBase){
-	$('#editProductPopup input').removeClass('error');
-
-	var data = {},
-		attrMaxQty = +$('#editProductPopup #nameProd').attr('maxQty'),
-		attrQty = +$('#editProductPopup #nameProd').attr('qty');
-	data.defaultProdName = $('#editProductPopup #nameProd').attr('name');
-	data.nameProd = $('#editProductPopup #nameProd').val();
-	data.qtyProd = +$('#editProductPopup #qtyProd').val();
-	data.priceProd = +$('#editProductPopup #priceProd').val();
-	data.unitProd = $('#editProductPopup #unitProd').val();
-
-	checkAddEditForm('editProductPopup', data, attrMaxQty);
-
-	var errorEditProd = $('#editProductPopup').find('.error');
-	if(errorEditProd.length == 0){
-		$('#editProductPopup input').removeClass('error');
-		if(changeProductBase){
-			$.ajax({
-				type: "GET",
-				url: "/applyEditing",
-				data: data,
-				success: function(request) {
-					renderEditings(data);
-				}
-			});
-		}
-		else{
-			renderEditings(data);
-			var chunkSummCheck = +$('#salingsValueCheck').text(),
-				newSumm = 0;
-
-			if(data.qtyProd > attrQty){
-				newSumm = chunkSummCheck + ((data.qtyProd - attrQty) * data.priceProd);
-				$('#salingsValueCheck').text(floorN(newSumm, 2));
-			}
-			else if(data.qtyProd < attrQty){
-				newSumm = chunkSummCheck - ((attrQty - data.qtyProd) * data.priceProd);
-				$('#salingsValueCheck').text(floorN(newSumm, 2));
-			}
-		}
-	}
-}
-
-//Remove list item from list
-function removeListItem(e, changeProductBase, ParentTr){
-	var getParentTr =$(e.target).closest('tr');
-	$(getParentTr).fadeOut(200, function(){
-		$(this).remove();
-		if(changeProductBase){
-			var titleError = $('#rightSide #productList tbody tr').get();
-			if(titleError.length == 0){
-				$('#tableListError').css('display', 'block');
-			}
-		}
-		else{
-			var countCheckList = $('#tableListCheck td');
-			if(countCheckList.length == 0){
-				$('#checkList').slideUp();
-			}
-		}
-	});
-}
-
-//Dell product
-function dellPRoduct(e, changeProductBase){
-	var getParentTr =$(e.target).closest('tr');
-	var data = {};
-	data.titleProd = $(getParentTr).find('#tableTitle').text();
-	data.loginName = $('#userName').text();
-
-	if(changeProductBase){
-		$.ajax({
-			type: 'GET',
-			url: '/delProduct',
-			data: data,
-			success: function(request){
-				removeListItem(e, changeProductBase, getParentTr);
-			}
-		});
-	}
-	else{
-		removeListItem(e, changeProductBase, getParentTr);
-		var chunkSummCheck = +$('#salingsValueCheck').text(),
-			deletedSumm = +$(getParentTr).find('#tableCoast').text();
-		$('#salingsValueCheck').text(floorN(chunkSummCheck - deletedSumm, 2));
-	}
-}
-//Function date for rendering report list
-function getDayReport(request, i){
-	var MILISEC = +(request[i].day);
-	var d = new Date(MILISEC),
-		curDate = d.getDate(),
-		curMonth = d.getMonth()+1,
-		curYear = d.getFullYear();
-	return (curMonth<=9? '0'+curMonth : curMonth)+'/'+(curDate<=9? '0'+curDate : curDate)+'/'+curYear;
-}
-//Renderreport list
-function renderReportList(){
-	$('#errorReport').css({'display' : 'none'});
-	$('#errorAjax').css('display', 'none');
-	var reportSumm = 0;
-	var data = {};
-	data.reportDateFrom = $('#datepicker').val(),
-	data.reportDaysTill = $('#datepicker2').val();
-
-	$loadingItem.css('display', 'block');
-	$.ajax({
-		type: "GET",
-		url: "/renderReportList",
-		data: data,
-		success: function(request) {
-			$('#loading').css('display', 'none');
-			if(request.length > 0){
-				$('#reportList tbody tr').remove();
-				for(var i=0; i < request.length; i++){
-					var reportTableDay = '<tr class="reportDay">'+
-					'<td colspan="4">Продажі за : '+getDayReport(request, i)+'</td>'+
-					'<tr>';
-					var reportTableItem = '<tr>'+
-					'<td id="salesTableTitle">'+request[i].title+'</td>'+
-					'<td id="salesTableQty">'+floorN(request[i].qty, 2)+'</td>'+
-					'<td id="salesTablePrice">'+floorN(request[i].price, 2)+'</td>'+
-					'<td id="salesTableCoast">'+floorN(request[i].qty*request[i].price, 2)+'</td>'+
-					'</tr>';
-					if(i == 0){
-						$('#reportList tbody').append(reportTableDay);
-					}
-					else if(getDayReport(request, i) !== getDayReport(request, i-1)){
-						$('#reportList tbody').append(reportTableDay);
-					}
-					reportSumm += request[i].qty*request[i].price;
-					$('#reportList tbody').append(reportTableItem);
-				};
-				$('#reportSumm').text(floorN(reportSumm, 2));
-				$('#reportList').fadeIn(500);
-			}
-			else{
-				$('#reportList').css('display', 'none');
-				$('#errorReport').css({'display' : 'block'}).text('За ці дні немає продаж.');
-			}
-		},
-		error : function(){
-			$('#loading').css('display', 'none');
-			$('#errorAjax').css('display', 'block');
-		}
-	});
-};
-//Add to sales list from check list
-function fromCheckToSalesList(){
-	var arrCheckList = [];
-	$('#checkList tbody tr').each(function(index){
-		var data = {};
-		data.titleSold = $(this).find('#tableTitle').text();
-		data.qtySold = $(this).find('#tableQty').text();
-		data.priceSold = $(this).find('#tablePrice').text();
-		arrCheckList.push(data);
-	});
-	if(arrCheckList.length !== 0){
-		addSaleList(arrCheckList, 'saleList', true);
-	}
-}
-
-//Clear report list
-function clearReportList(){
-	$('#reportList').css('display', 'none');
-	$('#reportList tbody tr').remove();
 };
 
 //Function login
@@ -628,68 +255,6 @@ $('#loginForm').on('submit', function(e){
 	login(($('#loginLogin').val()), ($('#passwordLogin').val()));
 });
 
-//Add product
-$('#addProducForm').on('submit', function(e){
-	e.preventDefault();
-	$('#addProducForm input').removeClass('error');
-
-	var data = {};
-	data.nameProd = $('#addProducForm #nameProd').val();
-	data.qtyProd = $('#addProducForm #qtyProd').val();
-	data.priceProd = $('#addProducForm #priceProd').val();
-	data.unit = $('#addProducForm #unit').val();
-
-	checkAddEditForm('addProducForm', data);
-
-	var errorAddForm = $('#addProducForm').find('.error');
-
-	if(errorAddForm.length == 0){
-		$loadingItem.css('display', 'block');
-		$.ajax({
-			type: "GET",
-			url: "/addProduct",
-			data: data,
-			success: function(request) {
-				$loadingItem.css('display', 'none');
-				if(request){
-					addProductToList(request.nameProd, request.qtyProd, request.priceProd, request.unit, 'tableList', true, 0);
-				}
-				else if(!request){
-					$('#addProducForm #nameProd').addClass('error');
-				}
-			}
-		});
-	}
-});
-
-//Delete product from check
-$('#checkList #tableActions #Del').live('click', function(e){
-	e.preventDefault();
-	dellPRoduct(e, false);
-});
-
-//Delete product from database
-$('#productList #tableActions #Del').live('click', function(e){
-	e.preventDefault();
-	dellPRoduct(e, true);
-});
-
-//Edit product
-$('#tableActions #Edit').live('click', function(e){
-	e.preventDefault();
-	editPRoduct(e);
-});
-
-//Apply editing product
-$('#editProductWraper input').on('keyup', function(e){
-	if(e.keyCode == 13){
-		$('#applyEdits, #applyEditsCheck').trigger('click');
-	}
-});
-$('#editProductPopup #applyEdits').on('click', function(e){
-	applyEditings(true);
-});
-
 //Close modal and poups
 function closeModal(){
 	$('#modals').text('');
@@ -768,7 +333,6 @@ function searchProd(e){
 	}
 };
 
-
 //Search delegates
 //prevent form submit on prodName field
 $(document).delegate('#searchProd', 'keypress', function(e){
@@ -799,37 +363,6 @@ $('#searchProdQty').on('keyup', function(e){
 		var saleSumm = floorN(saleProdQty*saleProdPrice, 2);
 		$('#searchProdSumm').val(saleSumm);
 		fadeoutErrMsgs();
-	}
-});
-
-//Add to sales list
-$('#btnSell').on('click', function(e){
-	e.preventDefault();
-	fromCheckToSalesList();
-});
-
-//Add to sales list from check by ctrl+enter
-$('#searchProd').on('keydown', function(e){
-	if((e.ctrlKey) && (e.keyCode == 13)){
-		fromCheckToSalesList();
-	}
-});
-
-//Apply edit product in ceck
-$('#editProductPopup #applyEditsCheck').on('click', function(e){
-	applyEditings(false);
-});
-//Generate report list
-$('#generateReport').on('click', function(e){
-	e.preventDefault();
-	renderReportList();
-});
-$('#getReport').on('keyup', function(e){
-	if(e.keyCode == 13){
-		renderReportList();
-	}
-	else if(e.keyCode == 46){
-		clearReportList();
 	}
 });
 
@@ -874,7 +407,7 @@ $('.settings').on('click', function(e){
 	$('#modalWindow').css('display' , 'block');
 });
 
-//Clear sales list
+//Clear sales list !DATABASE
 $('.clearSalesList').on('click', function(e){
 	e.preventDefault();
 	$('#loading').css('display', 'block');
@@ -913,6 +446,7 @@ $('.showPass').live('click', function(){
 	$this.animate({"width": "100%"}, "slow");
 });
 
+//TO DO
 $('#adminActions #Edit').live('click', function(e){
 	var $this = $(this);
 	var yPos = e.pageY-15,
@@ -929,7 +463,9 @@ $('#adminActions #Edit').live('click', function(e){
 		console.log(i);
 		console.log(value);
 	})
-})
+});
+
+
 //Footer at the bootom of the page
 var $footer = $('#footer'),
 	footerHeight = $footer.height();
@@ -947,7 +483,7 @@ var units = ['шт', 'кг', 'л', 'м'];
 
 //Clear table
 function clearTable($context){
-	$context.find('tbody tr:not(.checkAmount)').remove();
+	$context.find('tbody tr:not(.tableAmount)').remove();
 	$context.find('.totalAmount').text('0.00');
 }
 //Get sring format for DATE
@@ -1098,12 +634,12 @@ var Validator = {
 	valRegExps: {
 		numb: /^\b\d+\b$/i,
 		floatNumb: /^\b[0-9]*\.?[0-9]{1,2}\b$/i,
-		notEmpty: /.+/,
+		notEmpty: /\S+/,
 		email: /^\b[0-9A-Z_\.]+@[0-9A-Z]+\.[A-Z]{2,4}\b$/i
 	},
 	valRules: {
 		availQty: function(e, data, obj){
-			return (obj.valRegExps.numb).test(data.checkValue) && data.checkValue <= data.availQty ? true : false;
+			return (obj.valRegExps.numb).test(data.checkValue) && +data.checkValue <= data.availQty ? true : false;
 		},
 		ifAdded: function(e, data, obj){
 			return $('#'+data._id).length ? false : true;
@@ -1150,9 +686,11 @@ var Validator = {
 				}
 				
 				if(isValid == true)
-					obj.hideError(e, data.validatorType[i]);
-				else
-					obj.showError(e, data.validatorType[i]);				
+					obj.hideError(e, data.validatorType[i]);					
+				else{
+					obj.showError(e, data.validatorType[i]);
+					isValidBase = false;
+				}
 			}
 		}
 		
@@ -1256,8 +794,18 @@ function dialogEdited(request, $form){
 	var lineId = $form.closest('.editPopup').attr('data-line-id'),
 		$updateLine = $('.d-line-item#'+ lineId);
 
-	updateDataLineItem($updateLine, request);
+	updateDataLineItem($updateLine, setFlorNumbers(request));
 	Dialog.hide();
+}
+function prodAdded(request, $form){
+	var $prodTable = $('.prodTable');
+
+	if(request.error && request.error.length > 0){
+		//Error.show(request.error);
+	}else{
+		request.amount = request.price*request.qty;
+		$prodTable.prepend( templates.addedProductListItem( setFlorNumbers(request) ) );
+	}
 }
 function prodEdited(request, $form){
 	var data = request;
@@ -1266,7 +814,20 @@ function prodEdited(request, $form){
 	data.amount = data.qty*data.price;
 	
 	//Update base fields in form
-	dialogEdited(data, $form);	
+	dialogEdited( setFlorNumbers(data), $form);	
+}
+
+function setFlorNumbers(object){
+	var roundNames = 'qty price amount';
+
+	for(var key in object){
+		var regExp = new RegExp(key, 'i');
+
+		if(regExp.test(roundNames))
+			object[key] = floorN(object[key], 2);
+	}
+
+	return object;
 }
 function addProdToSalesList(xhr, opts, $form){
 	ajaxStop(xhr);
@@ -1311,13 +872,11 @@ function prodEditCheck(xhr, opts, $form){
 			amount: amount
 		};
 	//Set total amount
-	$closestSalesValue.text(salesValue + ( (newQty-prevQty) * price));
+	$closestSalesValue.text( floorN( salesValue + ((newQty-prevQty) * price), 2));
 	//Update lineItem
-	updateDataLineItem($updateLine, data);
+	updateDataLineItem($updateLine, setFlorNumbers(data));
 
 	Dialog.hide();
-
-	console.log('Edit prod');
 }
 function saleCheck(e){
 	var $this = $(e.currentTarget),
@@ -1357,8 +916,8 @@ function saleCheck(e){
 			clearTable($dCheckList);
 			
 			//Render sold check list
-			$soldCheckList.find('tbody').prepend(templates.checkItem(data));
-			$soldCheckListTotalAmount.text( tableTotalAmount + data.totalAmount );			
+			$soldCheckList.find('tbody').prepend(templates.checkItem(setFlorNumbers(data)));
+			$soldCheckListTotalAmount.text( floorN(tableTotalAmount + data.totalAmount,2) );			
 		},
 		error: function(err){
 			
@@ -1370,11 +929,59 @@ function populateCheckDialog(request, $form){
 	var checkList = templates.dialog({templateContent: request});
 	Dialog.show(checkList);
 }
+
 function renderReport(request, $form){
-	var $reportResults = $('.reportResults');
+	var $resContainer = $('.reportResults');
 	
-	$reportResults.html(request);
+	$resContainer.html(request.html);
+	
+	if(request.callback && request.salesList && request.salesList.length > 0 && request.callback.length > 0)
+		executeFunctionByName(request.callback, window, request, $resContainer);
 }
+
+function salesStatistic(request, $resContainer){
+	var salesList = request.salesList,
+		plotData = {
+			data: [
+				[salesList[0].date, salesList[0].totalAmount, getFormatedDate(salesList[0].date)]
+			]
+		},
+		plotConf = {
+			series: {
+				lines:{ 
+					show: true,
+					lineWidth: 3
+				},
+				points:{
+					show: true
+				},
+				label: 'Графік прибутку по даті'
+			},
+			xaxis:{
+				color: '#FFF',
+				mode: "time",
+				minTickSize: [1, "day"],
+				timeformat: "%m/%d/%Y",
+			},
+			yaxis:{
+				color: '#FFF'
+			}
+		},
+		curCheck = 0;
+	
+	for(var i=1; i<salesList.length; i++){
+		if(getFormatedDate(plotData.data[curCheck][0]) == getFormatedDate(salesList[i].date)){
+			plotData.data[curCheck][1] += salesList[i].totalAmount;
+		}
+		else{
+			plotData.data.push( [ salesList[i].date, salesList[i].totalAmount, getFormatedDate(salesList[i].date)] );
+			curCheck++;
+		}	
+	}
+	
+	$.plot($(".salesGraph"), [plotData], plotConf);
+}
+
 //Inits
 Dialog.init();
 Validator.init();

@@ -43,25 +43,25 @@ block products
 								th.sProdSumm Сумма
 						tbody
 							tr(class='d-line-item', id='searchProdFrom')
-								td.sClienList.t-field
+								td.sClienList.ws-field
 									select(name='clientId', value='noName')
 										option(value='noName') Загальний
 										each client in clientList
 											option(value=client._id) #{client.firstName} #{client.lastName}
 									input(type='hidden', name='clientFullName', value='Загальний')
-								td.sProdName.t-field
+								td.sProdName.ws-field
 									input(type='text', name='title', placeholder='Назва товару', id='searchProd', autocomplete="off", data-validate-type='attrVal ifAdded')
 									input(type='hidden', name='_id', id='searchProdId')
 									div#searchResults(style='display:none')
 										ul
-								td.t-field
+								td.ws-field
 									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off", data-validate-type='availQty')
 									input(type='hidden', name='maxQty', id='searchProdMaxQty')
-								td.t-field
+								td.ws-field
 									input(type='text', name='unit', placeholder='Одиниця Вимірювання', id='searchProdUnit', disabled='disabled')
-								td.t-field
+								td.ws-field
 									input(type='text', name='price', placeholder='Ціна', id='searchProdPrice', disabled='disabled')
-								td.t-field
+								td.ws-field
 									input(type='text', name='amount', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
 					input(type='submit', value='+Чек')
 				
@@ -99,7 +99,7 @@ block products
 									th.tableCoast Сумма
 									th.tableActions Дії
 							tbody
-								tr.checkAmount
+								tr.tableAmount
 									td.totalText(colspan='3') Сумма чеку: 
 									td.totalAmount(colspan='3') 0.00
 				

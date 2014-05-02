@@ -6,10 +6,10 @@ block popupEdit
 		#editProductWraper
 			input(type='text', placeholder='Назва продукту', id='nameProd')
 			select(id='unitProd')
-				option(value='шт')шт
-				option(value='кг')кг
-				option(value='л')л
-				option(value='м')м
+				option(value='шт') шт
+				option(value='кг') кг
+				option(value='л') л
+				option(value='м') м
 			input(type='text', placeholder='Кількість', id='qtyProd')
 			input(type='text', placeholder='Ціна', id='priceProd')
 			input(type='submit',  value='Змінити', id='applyEdits')
@@ -38,43 +38,47 @@ block home
 block products
 	#rightSide
 		block addForm
-			form(action='/addProduct', method='GET', id='addProducForm')
+			form#addProducForm(action='/addProduct', method='GET', ajax='true', ajax-success='prodAdded')
 				h4(id='addProdTitle') Додати продукт до бази
-				input(type='text', name='nameProd', placeholder='Назва товару', id='nameProd')
-				input(type='text', name='qtyProd', placeholder='Кількість', id='qtyProd')
-				input(type='text', name='priceProd', placeholder='Ціна', id='priceProd')
-				select(name='unit', id='unit')
-					option(value='шт') шт
-					option(value='кг') кг
-					option(value='л') л
-					option(value='м') м
-				input(type='submit',  value='Додати')
+				div.ws-field.titleProd
+					input(type='text', name='title', placeholder='Назва товару', data-validate-type='notEmpty')
+				div.ws-field.qtyProd
+					input(type='text', name='qty', placeholder='Кількість', data-validate-type='floatNumb')
+				div.ws-field.priceProd
+					input(type='text', name='price', placeholder='Ціна', data-validate-type='floatNumb')
+				div.ws-field.unit
+					select(name='unit', id='unit')
+						option(value='шт') шт
+						option(value='кг') кг
+						option(value='л') л
+						option(value='м') м
+					input(type='submit',  value='Додати')
 			h2(class="tableTitle") База всіх продуктів
 			#myTable
 				table(id='tableList', class='tablesorter prodTable')
 					thead
 						tr
-							th(id='tableThTitle', class='sort') Назва товару
-							th(id='tableThQty') Кількість
-							th(id='tableThUnit') Один. виміру
-							th(id='tableThPrice') Ціна
-							th(id='tableThCoast') Сумма
-							th(id='tableThActions') Дії
+							th.tableThTitle.sort Назва товару
+							th.tableThQty Кількість
+							th.tableThUnit Один. виміру
+							th.tableThPrice Ціна
+							th.tableThCoast Сумма
+							th.tableThActions Дії
 					tbody
 						each product in productsList
 							tr(class='d-line-item', id=product._id)
-								td
+								td.tableTitle
 									span(data-name='title', data-val=product.title, data-label='Назва товару')=product.title
-								td
-									span(data-name='qty', data-val=product.qty, data-label='Кількість')=product.qty
-								td
+								td.tableQty
+									span(data-name='qty', data-val=floorN(product.qty, 2), data-label='Кількість')=floorN(product.qty, 2)
+								td.tableUnit
 									span(data-name='unit', data-val=product.unit, data-label='Один. виміру')=product.unit
-								td
-									span(data-name='price', data-val=product.price, data-label='Ціна')=product.price
-								td
-									span(data-name='amount', data-val=product.price*product.qty, data-label='Сума')=product.price*product.qty
-								td(class='actionBtnsTd')
-									a(href='/editProduct', class='edit dialogData', dialog-template='editProduct', dialog-before-show='editProdDialog', clientid=product._id) Змінити
+								td.tablePrice
+									span(data-name='price', data-val=floorN(product.price, 2), data-label='Ціна')=floorN(product.price, 2)
+								td.tableCoast
+									span(data-name='amount', data-val=floorN(product.price*product.qty, 2), data-label='Сума')=floorN(product.price*product.qty, 2)
+								td.tableActions
+									a(href='#', class='edit dialogData', dialog-template='editProduct', dialog-before-show='editProdDialog') Змінити
 									form(action='/removeProd/#{product._id}', ajax='true', ajax-success='removeLineItem')
 										input(type='hidden', name='_id', value=product._id)
 										input(type='submit', class='del', value='Видалити')

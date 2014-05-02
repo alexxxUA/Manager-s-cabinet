@@ -27,11 +27,11 @@ div.checkDetailsContainer
 					-totalAmount += +prod.amount;
 					tr.t-field
 						td.tableTitle=prod.title
-						td.tableQty=prod.qty
+						td.tableQty=floorN(prod.qty, 2)
 						td.tableUnit=prod.unit
-						td.tablePrice=prod.price
-						td.tableCoast=prod.amount
-				tr.checkAmount
+						td.tablePrice=floorN(prod.price, 2)
+						td.tableCoast=floorN(prod.amount, 2)
+				tr.tableAmountAmount
 					td.totalText(colspan='3') Сумма чеку: 
-					td.totalAmount(colspan='2')=totalAmount
+					td.totalAmount(colspan='2')=floorN(totalAmount, 2)
 

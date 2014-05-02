@@ -4,8 +4,11 @@ h3.reportTitle
 	-var dTillString = getFormatedDate(dTill);
 	-if(dFromString == dTillString){
 		span.date станом на дату #{dFromString}	
+	-}else{
+		span.date станом на період з #{dFromString} по #{dTillString}
 	-}
-	-else{
-		span.rangeDate станом на період з #{dFromString} по #{dTillString}
-	-}
-include checkList
+-if(salesList.length > 0){
+	include checkList	
+-}else{
+	div.mainError Продажі за вибраний період не знайдені.
+-}
