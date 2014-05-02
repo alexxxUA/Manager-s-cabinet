@@ -2,18 +2,18 @@ include jadeFunctions
 div.checkDetailsContainer
 	div.checkDetails
 		div.ws-field
-			span.label № Чеку:
+			span.label № Чеку: 
 			span.value=checkNumb
 		div.ws-field
-			span.label Покупець:
+			span.label Покупець: 
 			span.value=clientFullName
 		div.ws-field
-			span.label Дата продажу:
+			span.label Дата продажу: 
 			span.value=getFormatedDate(date)
 
 	div.checkProdList
 		h2.tableTitle Список товарів
-		table.prodTable
+		table.prodTable.salesTableList
 			thead
 				tr
 					th.tableTitle Назва товару

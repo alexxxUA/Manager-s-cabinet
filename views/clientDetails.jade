@@ -1,18 +1,19 @@
 div(class='clientDetailsWrap')
-	p Деталі клієнта
-	div(class='twoColDetails')
-		div(class='colItem')
-			span(class='leftCol') Ім‘я: 
-			span(class='rightCol')=clientDet.firstName
-		div(class='colItem')
-			span(class='leftCol') Прізвище: 
-			span(class='rightCol')=clientDet.lastName
-		div(class='colItem')
-			span(class='leftCol') День народження: 
-			span(class='rightCol')=clientDet.birthday
-		div(class='colItem')
-			span(class='leftCol') Email: 
-			span(class='rightCol')=clientDet.email
-		div(class='colItem')
-			span(class='leftCol') Телефон: 
-			span(class='rightCol')=clientDet.tel
+	h2.tableTitle Деталі кліэнта
+	table.salesTableList 
+		tbody
+			tr
+				td.align-right Ім‘я: 
+				td=clientDet.firstName
+			tr
+				td.align-right Прізвище: 
+				td=clientDet.lastName
+			tr 
+				td.align-right День народження: 
+				td=clientDet.birthday
+			tr
+				td.align-right Email: 
+				td=clientDet.email
+			tr
+				td.align-right Телефон:
+				td=clientDet.tel

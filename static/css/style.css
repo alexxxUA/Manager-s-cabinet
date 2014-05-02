@@ -103,7 +103,7 @@ input:focus{
 #titleLogin div{float:right;}
 html{
 	height: 100%;
-	background: url(../img/tree.jpg);
+	background: url(../img/loremBG.jpg);
 }
 body{
 	color:#0BFFF5;
@@ -143,8 +143,7 @@ body{
 	margin:0 auto;
 	padding:0 20px;
 	min-height: 100%;
-	border-left:10px dashed #efbb68;
-	background: #414141;
+	background: url(../img/grayBG.jpg);
 	border-radius: 0 40px 40px 0;
 }
 #header h1 a{
@@ -254,7 +253,8 @@ select{
 #salesList{
 	clear:both;
 }
-#addProducForm{
+#addProducForm,
+.addClientWrap{
 	overflow: hidden;
 	border: 1px dashed #0BFFF5;
 	padding: 10px;
@@ -363,7 +363,7 @@ td#tableThCoast,
 	position: absolute;
 	border: 1px solid white;
 	padding: 20px;
-	background: #4D9CFF;
+	background: #2B3750;
 	color: white;
 	border-radius: 20px;
 	z-index:99;
@@ -410,6 +410,8 @@ td#tableThCoast,
 	position:fixed;
 	width:100%;
 	height:100%;
+	background: #000;
+	opacity: 0.8;
 	top:0;
 	left:0;
 }
@@ -654,7 +656,8 @@ body .del{background-position: center -122px;}
 #register-form h2{float:left;}
 form .error,
 #editProductWraper .error{border-color: #FF6F6F;}
-#addProducForm h4{
+#addProducForm h4,
+.addClientWrap h4{
 	margin: 0 0 5px 0;
 	background: url(../img/sprite.png) left -174px no-repeat;
 	padding: 0 0 0 22px;
@@ -1003,4 +1006,42 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .soldCheckList .cNumb input:hover{
 	text-decoration: underline;
+}
+.addClientWrap th,
+.addClientWrap td{
+	width: 16%;
+}
+.addClientWrap input[type='text']{
+	width: 112px;
+}
+.usersTable td{
+	text-align: center;
+}
+.clienOrderHistory,
+.clientDetailsWrap{
+	float: left;
+}
+.clienOrderHistory{
+	width: 67%;
+	margin-left: 3%;
+}
+.clientDetailsWrap{
+	width: 30%;
+}
+.align-right{
+	text-align: right;
+}
+.checkDetailsContainer{
+	width: 500px;
+}
+.checkDetails{
+	font-size: 15px;
+}
+.checkProdList{
+	margin-top: 20px;
+}
+.checkProdList th,
+.checkProdList td,
+.checkProdList .tableTitle{
+	border-color: #E0FF00;
 }

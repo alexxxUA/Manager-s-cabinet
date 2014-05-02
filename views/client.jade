@@ -24,25 +24,26 @@ block home
 block mainContent
 	#rightSide
 		include clientDetails
-		h2(class="tableTitle") Історія замовлень
-		table(class='salesTableList soldCheckList')
-			thead
-				tr
-					th.cNumb № чеку
-					th.cDate Дата
-					th.cAmount Сума
-			tbody
-				-var totalAmount = 0;
-				each check in salesList
-					-totalAmount += +check.totalAmount;
-					tr.d-line-item(id=check._id)
-						td.cNumb
-							form(action='/showCheck/#{check._id}', ajax='true', ajax-success='populateCheckDialog')
-								input(type='hidden', name='checkNumb', value=check.checkNumb)
-								input(type='submit', value=check.checkNumb)
-						td.checkDate=getFormatedDate(check.date)
-						td.cAmount=floorN(check.totalAmount, 2)
+		div.clienOrderHistory
+			h2(class="tableTitle") Історія замовлень
+			table(class='salesTableList soldCheckList')
+				thead
+					tr
+						th.cNumb № чеку
+						th.cDate Дата
+						th.cAmount Сума
+				tbody
+					-var totalAmount = 0;
+					each check in salesList
+						-totalAmount += +check.totalAmount;
+						tr.d-line-item(id=check._id)
+							td.cNumb
+								form(action='/showCheck/#{check._id}', ajax='true', ajax-success='populateCheckDialog')
+									input(type='hidden', name='checkNumb', value=check.checkNumb)
+									input(type='submit', value=check.checkNumb)
+							td.checkDate=getFormatedDate(check.date)
+							td.cAmount=floorN(check.totalAmount, 2)
 
-				tr.tableAmount
-					td.totalText(colspan='2') Загальна сумма: 
-					td.totalAmount=floorN(totalAmount, 2)
+					tr.tableAmount
+						td.totalText(colspan='2') Загальна сумма: 
+						td.totalAmount=floorN(totalAmount, 2)

@@ -1,4 +1,5 @@
 div(class='addClientWrap')
+	h4 Додати клієнта до бази
 	form(action='/addClient', ajax='true', ajax-success='clientAdded')
 		table(class='table')
 			thead
@@ -12,14 +13,14 @@ div(class='addClientWrap')
 			tbody
 				tr
 					td(class='ws-field')
-						input(name='firstName', type='text', placeholder='Ім‘я', class='inputNoramal', data-validate-type='notEmpty')
+						input(name='firstName', type='text', placeholder='Ім‘я', class='inputNormal', data-validate-type='notEmpty')
 					td(class='ws-field')
-						input(name='lastName', type='text', placeholder='Прізвище', class='inputNoramal', data-validate-type='notEmpty')
+						input(name='lastName', type='text', placeholder='Прізвище', class='inputNormal', data-validate-type='notEmpty')
 					td(class='ws-field')
 						input(name='birthday', type='text', placeholder='День народження', class='inputSmall')
 					td(class='ws-field')
 						input(name='email', type='text', placeholder='Email', class='inputSmall', data-validate-type='email')
 					td(class='ws-field')
-						input(name='tel', type='text', placeholder='Телефон', class='inputNoramal', data-validate-type='notEmpty')
+						input(name='tel', type='text', placeholder='Телефон', class='inputNormal', data-validate-type='notEmpty')
 					td(class='ws-field')
-						input(type='submit', value='Додати', class='inputNoramal')
+						input(type='submit', value='Додати', class='inputNormal')
