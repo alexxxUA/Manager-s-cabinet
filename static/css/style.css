@@ -275,10 +275,9 @@ select{
 	right: 0;
 }
 .hidePass{
-	background: #414141 url(../img/arrow-right.png) left center no-repeat;
+	background: #414141 url(../img/grayBG.jpg) left center no-repeat;  4.  /* RGBa with 0.6 opacity */  5.  background: rgba(0, 0, 0, 0.6);4./* RGBa with 0.6 opacity */5.background: rgba(0, 0, 0, 0.6);  4.  /* RGBa with 0.6 opacity */  5.  background: rgba(0, 0, 0, 0.6);
 }
 .showPass{
-	background: url(../img/arrow-left.png) right center no-repeat;
 	width: 100% !important;
 }
 .pass{
@@ -316,8 +315,9 @@ select{
 #tableListCheck tbody tr:hover,
 .salesTableList tbody tr:hover,
 #reportList tbody tr:hover{
-	background: #46726B;
-	color: #50EE4A;
+	background: rgb(43,55,80);
+	background: rgba(43,55,80, 0.7);
+	color: #CCFF00;
 }
 #tableList,
 #tableListCheck,
@@ -1028,7 +1028,8 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 .clientDetailsWrap{
 	width: 30%;
 }
-.align-right{
+.align-right,
+.totalText{
 	text-align: right;
 }
 .checkDetailsContainer{

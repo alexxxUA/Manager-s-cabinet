@@ -1,15 +1,5 @@
 extends layout
 block admin
-    div#editProductPopup
-        #closeBtn close
-        h4 Корегування даних :
-        #editProductWraper
-            input(type='text', placeholder='Ім‘я', id='nameProd')
-            input(type='text', placeholder='Прізвище', id='qtyProd')
-            input(type='text', placeholder='Логін', id='priceProd')
-            input(type='text', placeholder='Email', id='priceProd')
-            input(type='text', placeholder='Пароль', id='priceProd')
-            input(type='submit',  value='Змінити', id='applyEdits')
     a(href="/home") <До бази продуктів
     table(class="usersTable salesTableList")
         thead
@@ -23,16 +13,22 @@ block admin
                 th(class='adminActions') Дії
         tbody
             each user, i in users
-                tr
+                tr.d-line-item(id=user._id)
                     td=i+1
-                    td=user.firstName
-                    td=user.lastName
-                    td=user.login
-                    td=user.email
-                    td(class="userPass")
-                        div(class="pass")=user.password
-                        div(class="showHidePass hidePass")
-                    td(id='adminActions')
-                        input(type='button', id='Edit', name=user._id, value='Edit')
-                        input(type='button', id='Del', name=user._id, value='Delete')
+                    td.d-line
+                        span(data-name='firstName', data-val=user.firstName, data-label='Ім‘я')=user.firstName
+                    td
+                        span(data-name='lastName', data-val=user.lastName, data-label='Прізвище')=user.lastName
+                    td
+                        span(data-name='login', data-val=user.login, data-label='Логін')=user.login
+                    td
+                        span(data-name='email', data-val=user.email, data-label='Email')=user.email
+                    td.userPass
+                        div.pass
+                             span(data-name='password', data-val=user.password, data-label='Пароль')=user.password
+                        div.showHidePass.hidePass
+                    td.adminActions
+                        a(href='#', class='edit dialogData', dialog-template='editUser') Змінити
+                        form(action='/removeUser/#{user._id}', ajax='true', ajax-success='removeLineItem')
+                            input(type='submit', class='del', value='Видалити')
     a(href="/home") <До бази продуктів

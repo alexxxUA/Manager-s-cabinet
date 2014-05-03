@@ -5,6 +5,37 @@ var templates = {
 				"<div class='content'> <%= templateContent %> </div>"+
 			"</div>"
 	),
+	editUser: _.template(
+		"<div class='dialog editPopup' data-line-id='<%= lineId %>'>"+
+				"<div class='closeBtn'>close</div>"+
+				"<form action='/editUser/<%= lineId %>' ajax='true' ajax-success='dialogEdited'>"+
+					"<input type='hidden' name='_id' value='<%= lineId %>'/>"+
+				 	"<div class='ws-field'>"+
+				 		"<label><%= firstName.label %></label>"+
+				 		"<input type='text' name='firstName' value='<%= firstName.val %>' />"+
+				 	"</div>"+
+				 	"<div class='ws-field'>"+
+				 		"<label><%= lastName.label %></label>"+
+				 		"<input type='text' name='lastName' value='<%= lastName.val %>' />"+
+				 	"</div>"+
+				 	"<div class='ws-field'>"+
+				 		"<label><%= login.label %></label>"+
+				 		"<input type='text' name='login' value='<%= login.val %>' />"+
+				 	"</div>"+
+				 	"<div class='ws-field'>"+
+				 		"<label><%= email.label %></label>"+
+				 		"<input type='text' name='email' value='<%= email.val %>' data-validate-type='email'/>"+
+				 	"</div>"+
+				 	"<div class='ws-field'>"+
+				 		"<label><%= password.label %></label>"+
+				 		"<input type='text' name='password' value='<%= password.val %>' />"+
+				 	"</div>"+
+				 	"<div class='ws-field'>"+
+				 		"<input type='submit' value='Змінити' />"+
+				 	"</div>"+
+				"</form>"+
+			"</div>"
+	),
 	editClient: _.template(
 			"<div class='dialog editPopup' data-line-id='<%= lineId %>'>"+
 				"<div class='closeBtn'>close</div>"+
@@ -149,9 +180,9 @@ var templates = {
 						"<input type='submit' value='<%= checkNumb %>'/>"+
 					"</form>"+
 				"</td>"+
-				"<td class='checkClient'><%= clientFullName %></td>"+
-				"<td class='checkDate'><%= dateString %></td>"+
-				"<td class='checkAmount'><%= totalAmount %></td>"+
+				"<td class='cClient'><%= clientFullName %></td>"+
+				"<td class='cDate'><%= dateString %></td>"+
+				"<td class='cAmount'><%= totalAmount %></td>"+
 			"</tr>"
 	),
 	editProduct: _.template(

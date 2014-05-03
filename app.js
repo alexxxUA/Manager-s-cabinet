@@ -104,7 +104,7 @@ var T = {
 }
 
 //Check if user logged in
-function isLoggedIn(userID){
+function isLoggedIn(userID, res){
 	if(typeof userID == 'undefined')
 		res.redirect('/');
 }
@@ -120,22 +120,6 @@ app.use(express.bodyParser());
 
 //Cookie
 app.use(express.cookieParser());
-
-/* Connect mongoDB and log that srver started */
-MongoClient.connect(mongourl, function(err, database) {
-	if(err) throw err;
- 
-	
-	MD.db = database;
-	MD.users = MD.db.collection('users');
-	MD.products = MD.db.collection('products');
-	MD.salesList = MD.db.collection('salesList');
-	MD.clients = MD.db.collection('clients');
- 	
-	//listen on localhost 8888
- 	console.log('Server started on port: '+ port);
-	app.listen(port);
-});
 
 //Handle GET requests on '/'
 app.get('/', function(req, res){
@@ -170,9 +154,10 @@ app.get('/register', function(req, res){
 								login : req.query.login,
 								password : req.query.password,
 								email : req.query.email
+							}, function(err, result){
+								console.log('Register_successful');
+								res.send(req.query);								
 							});
-							console.log('Register_successful');
-							res.send(req.query);
 						}
 						else{
 							console.log('email alredy exist');
@@ -275,8 +260,37 @@ app.get('/admin', function(req, res){
 });
 
 //Home page
+app.get('/editUser/:id', function(req, res){
+	isLoggedIn(req.cookies.userID, res);
+
+	var dbQuery = {
+			_id: ObjectID(req.params.id)
+		},
+		updateParams = {
+			firstName: req.query.firstName,
+			lastName: req.query.lastName,
+			login: req.query.login,
+			email: req.query.email,
+			password: req.query.password
+		};
+
+	MD.users.update(dbQuery, {$set: updateParams}, function(err, result){
+		res.send(updateParams);
+	});
+});
+
+//Dell user from database
+app.get('/removeUser/:id', function(req, res){
+	isLoggedIn(req.cookies.userID, res);
+
+	MD.users.remove({_id: ObjectID(req.params.id)}, function(err, result){
+		res.send();		
+	});
+});
+
+//Home page
 app.get('/home', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 	
 	MD.users.findOne({_id : ObjectID(req.cookies.userID)}, function(err, result){
 		var userLogin = result.login;
@@ -291,7 +305,7 @@ app.get('/home', function(req, res){
 
 //Add product
 app.get('/addProduct', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var resDAta = {};
 
@@ -317,7 +331,7 @@ app.get('/addProduct', function(req, res){
 
 //Dell product from database
 app.get('/removeProd/:id', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	MD.products.remove({userID: req.cookies.userID, _id: ObjectID(req.params.id)}, function(err, result){
 		res.send();		
@@ -326,7 +340,7 @@ app.get('/removeProd/:id', function(req, res){
 
 //Edit prod
 app.get('/editProd/:id', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var userID = req.cookies.userID,
 		prodID = req.params.id,
@@ -344,7 +358,7 @@ app.get('/editProd/:id', function(req, res){
 
 //Sales list
 app.get('/salesPage', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var MILISEC = +(req.cookies.mSeconds),
 		timeZone = req.cookies.timeZone,
@@ -369,7 +383,7 @@ app.get('/salesPage', function(req, res){
 
 //Live search
 app.get('/search', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	MD.products.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
 		res.send(results);
@@ -378,7 +392,7 @@ app.get('/search', function(req, res){
 
 //Add product to sales list
 app.get('/saleCheck', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var timeZone = req.cookies.timeZone,
 		curTime = +T.getTimeWithOffset(timeZone),
@@ -434,7 +448,7 @@ app.get('/saleCheck', function(req, res){
 
 //Show check
 app.get('/showCheck/:id', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var userID = req.cookies.userID,
 		checkId = req.params.id;
@@ -446,7 +460,7 @@ app.get('/showCheck/:id', function(req, res){
 
 //Report page
 app.get('/report', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var userID = req.cookies.userID,
 		renderData = {
@@ -463,7 +477,7 @@ app.get('/report', function(req, res){
 
 //Get report
 app.get('/getReport', function(req, res){
-	isLoggedIn(req.cookies.userID);
+	isLoggedIn(req.cookies.userID, res);
 
 	var clientID = req.query.clientId.length > 0 ? '' : req.query.clientId,
 		reportType = req.query.reportType,
@@ -645,4 +659,19 @@ app.get('*', function(req, res){
 			res.redirect('/error404');
 		}
     });
+});
+
+/* Connect mongoDB and log that srver started */
+MongoClient.connect(mongourl, function(err, database) {
+	if(err) throw err; 
+	
+	MD.db = database;
+	MD.users = MD.db.collection('users');
+	MD.products = MD.db.collection('products');
+	MD.salesList = MD.db.collection('salesList');
+	MD.clients = MD.db.collection('clients');
+ 	
+	//listen on localhost 8888
+ 	console.log('Server started on port: '+ port);
+	app.listen(port);
 });

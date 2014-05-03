@@ -116,7 +116,7 @@ $('#forgotPassLink').on('click', function(e){
 	e.preventDefault();
 	$('#forgotPassPoup').slideDown();
 	$('#forgotEmail').focus();
-	$('#modalWindow').css('display' , 'block');
+	Dialog.showModal();
 });
 
 //Function chose searched item
@@ -140,7 +140,7 @@ function selectSearched(){
 	$('#searchProdMaxQty').val(searchChosenMaxQty);
 	$('#searchProdQty').attr('data-max-qty', searchChosenMaxQty);
 	$('#searchResults ul li').removeClass('selected');
-	$('#modalWindow').css('display', 'none');
+	Dialog.hideModal();
 	searchItem = 0;
 	setTimeout(function(){
 		$('#searchProdQty').focus();
@@ -255,28 +255,6 @@ $('#loginForm').on('submit', function(e){
 	login(($('#loginLogin').val()), ($('#passwordLogin').val()));
 });
 
-//Close modal and poups
-function closeModal(){
-	$('#modals').text('');
-
-	$('#editProductPopup, #forgotPassPoup, #salesSettings').slideUp(300);
-	$('#searchResults, #modalWindow, #forgotSuccess').css('display', 'none');
-	$('#tempEditProd').attr('id', '');
-	$('#searchResults ul li').removeClass('selected');
-	$('#forgotError').text('');
-	$('#forgotEmail').val('');
-	searchItem = 0;
-}
-
-//FadeOut popup
-$('#closeBtn').on('click', function(e){
-	e.preventDefault();
-	closeModal();
-})
-$('#modalWindow').on('click', function(){
-	closeModal();
-});
-
 //Live search products
 function searchProd(e){
 	if(e.keyCode !== 38 && e.keyCode !== 40 && e.keyCode !== 13 && e.keyCode !== 39 && e.keyCode !== 37 && e.keyCode !== 17){
@@ -292,7 +270,8 @@ function searchProd(e){
 				fadeoutErrMsgs();
 				$('#searchResults').find('li').remove();
 				if(request.length !== 0){
-					$('#modalWindow, #searchResults').css('display', 'block');
+					Dialog.showModal();
+					$('#searchResults').css('display', 'block');
 					var i=0,
 						searchViewedCount = 15;
 					while(i < request.length && i < searchViewedCount){
@@ -404,7 +383,7 @@ $(window).on('mousemove', function(e){
 $('.settings').on('click', function(e){
 	e.preventDefault();
 	$('#salesSettings').slideDown(300);
-	$('#modalWindow').css('display' , 'block');
+	Dialog.showModal();
 });
 
 //Clear sales list !DATABASE
@@ -433,7 +412,6 @@ $('.clearSalesList').on('click', function(e){
 });
 
 $('.hidePass').live('click', function(){
-	console.log('click');
 	var $this = $(this);
 	$this.animate({"width": "10%"}, "slow", function(){
 		$this.removeClass('hidePass').addClass('showPass');
@@ -600,7 +578,7 @@ var Dialog = {
 			offsetTop = window.scrollY;
 		
 		$dialog.css({'visibility': 'hidden', 'top': 0, 'left': 0});
-		$(this.modalBg).css({'top': '0', 'left': '0'}).show();
+		this.showModal();
 		$(this.dialogCont).append($dialog);
 		
 		if(coords){
@@ -616,8 +594,14 @@ var Dialog = {
 		$dialog.css({'visibility': 'visible'});		
 	},
 	hide: function(){
-		$(this.modalBg).hide().css({'top': '-100%', 'left': '-100%'});
+		this.hideModal();
 		$(this.dialogCont).text('');
+	},
+	showModal: function(){
+		$(this.modalBg).css({'top': '0', 'left': '0'}).show();
+	},
+	hideModal: function(){
+		$(this.modalBg).hide().css({'top': '-100%', 'left': '-100%'});
 	}
 }
 
@@ -639,7 +623,7 @@ var Validator = {
 	},
 	valRules: {
 		availQty: function(e, data, obj){
-			return (obj.valRegExps.numb).test(data.checkValue) && +data.checkValue <= data.availQty ? true : false;
+			return (obj.valRegExps.floatNumb).test(data.checkValue) && +data.checkValue <= data.availQty ? true : false;
 		},
 		ifAdded: function(e, data, obj){
 			return $('#'+data._id).length ? false : true;

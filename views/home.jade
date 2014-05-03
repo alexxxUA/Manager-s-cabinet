@@ -66,7 +66,7 @@ block products
 							th.tableThActions Дії
 					tbody
 						each product in productsList
-							tr(class='d-line-item', id=product._id)
+							tr.d-line-item(id=product._id)
 								td.tableTitle
 									span(data-name='title', data-val=product.title, data-label='Назва товару')=product.title
 								td.tableQty
