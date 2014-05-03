@@ -424,26 +424,6 @@ $('.showPass').live('click', function(){
 	$this.animate({"width": "100%"}, "slow");
 });
 
-//TO DO
-$('#adminActions #Edit').live('click', function(e){
-	var $this = $(this);
-	var yPos = e.pageY-15,
-		xPos = e.pageX,
-		editPopup = $('#editProductPopup');
-
-
-	$(editPopup).css({'top': yPos, 'left' : xPos});
-	$(editPopup).slideDown(400);
-	$('#modalWindow').css('display', 'block');
-	$('#editProductWraper #nameProd').focus();
-
-	$this.closest('tr').find('td').each(function(i, value){
-		console.log(i);
-		console.log(value);
-	})
-});
-
-
 //Footer at the bootom of the page
 var $footer = $('#footer'),
 	footerHeight = $footer.height();
