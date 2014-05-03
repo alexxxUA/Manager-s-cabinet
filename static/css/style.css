@@ -647,7 +647,7 @@ body .del{background-position: center -122px;}
 	width:auto;
 }
 #register-form input[type='submit']{
-	padding: 0 26px;
+	padding: 0 20px;
 }
 #login-form form,
 #register-form form{clear:both;}

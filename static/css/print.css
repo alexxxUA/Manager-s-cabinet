@@ -3,6 +3,9 @@ body,html, a{
 	font-family: arial !important;
 	height: auto;
 }
+html{
+	background: none;
+}
 h3{
 	font-size:16px;
 }
@@ -40,9 +43,22 @@ h3{
 .reportTitle{
 	display: block !important;
 }
+.getReport > .reportTitle {
+	display: none !important;
+}
+.reportForm{
+	display: none;
+}
+.reportResults{
+	padding: 0;
+}
+.aboutUS{
+	display: none;
+}
 #rightSide{
 	margin: 0 auto;
-	width: 600px !important;
+	width: 100% !important;
+	text-align: center;
 }
 #getReport{
 	width: 100% !important;
@@ -55,6 +71,9 @@ h3{
 	width: 31%;
 	padding: 2px 0px 2px 5px;
 	margin: 0;
+}
+#section-container{
+	background: #fff;
 }
 #getReport{
 	width: 100%;
@@ -74,9 +93,53 @@ h3{
 }
 .reportTitle,
 #getReportForm{
-	float: left;
+	text-align: center;
 }
 #getReportForm h3{
 	margin: 2px 10px 0 0;
 	text-transform: lowercase;
+}
+#tableList th, #tableListCheck th, .salesTableList th, #reportList th,
+#tableList td, #tableListCheck td, .salesTableList td, #reportList td{
+	border: 1px solid #000;
+}
+.soldCheckList .cNumb input{
+	color:#000;
+}
+#header{
+	padding: 10px 0 0 0;
+}
+.salesGraph{
+	max-width: 720px;
+	margin: 0 auto;
+	color:#000;
+	background:#fff !important;
+	border: none!important;
+	box-shadow: none!important;
+}
+.flot-text{
+	left:-10px!important;
+	color: #000!important;
+}
+body *:hover{
+	background: transparent!important;
+	color: #000!important;
+	text-decoration: none!important;
+}
+#modalWindow{
+	background:#fff!important;
+	opacity: 1;
+	top: 55px!important;
+	width: 9999999px;
+}
+.dialog{
+	top:50px!important;
+	background: transparent!important;
+	text-align: center;
+}
+.checkDetails{
+	text-align: left;
+}
+#closeBtn, .closeBtn{
+	display: none!important;
 }
