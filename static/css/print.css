@@ -100,8 +100,11 @@ h3{
 	text-transform: lowercase;
 }
 #tableList th, #tableListCheck th, .salesTableList th, #reportList th,
-#tableList td, #tableListCheck td, .salesTableList td, #reportList td{
-	border: 1px solid #000;
+#tableList td, #tableListCheck td, .salesTableList td, #reportList td,
+.checkProdList th, .checkProdList td, .checkProdList .tableMainTitle{
+	border-style: solid;
+	border-color: #000;
+	border-radius:0px;
 }
 .soldCheckList .cNumb input{
 	color:#000;
