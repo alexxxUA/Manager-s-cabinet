@@ -12,15 +12,15 @@ var templates = {
 					"<input type='hidden' name='_id' value='<%= lineId %>'/>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= firstName.label %></label>"+
-				 		"<input type='text' name='firstName' value='<%= firstName.val %>' />"+
+				 		"<input type='text' name='firstName' value='<%= firstName.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= lastName.label %></label>"+
-				 		"<input type='text' name='lastName' value='<%= lastName.val %>' />"+
+				 		"<input type='text' name='lastName' value='<%= lastName.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= login.label %></label>"+
-				 		"<input type='text' name='login' value='<%= login.val %>' />"+
+				 		"<input type='text' name='login' value='<%= login.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= email.label %></label>"+
@@ -28,7 +28,7 @@ var templates = {
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= password.label %></label>"+
-				 		"<input type='text' name='password' value='<%= password.val %>' />"+
+				 		"<input type='text' name='password' value='<%= password.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<input type='submit' value='Змінити' />"+
@@ -43,11 +43,11 @@ var templates = {
 					"<input type='hidden' name='clientId' value='<%= lineId %>'/>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= firstName.label %></label>"+
-				 		"<input type='text' name='firstName' value='<%= firstName.val %>' />"+
+				 		"<input type='text' name='firstName' value='<%= firstName.val %>' data-validate-type='notEmpty' />"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= lastName.label %></label>"+
-				 		"<input type='text' name='lastName' value='<%= lastName.val %>' />"+
+				 		"<input type='text' name='lastName' value='<%= lastName.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= birthday.label %></label>"+
@@ -55,11 +55,11 @@ var templates = {
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= email.label %></label>"+
-				 		"<input type='text' name='email' value='<%= email.val %>' />"+
+				 		"<input type='text' name='email' value='<%= email.val %>' data-validate-type='email'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<label><%= tel.label %></label>"+
-				 		"<input type='text' name='tel' value='<%= tel.val %>' />"+
+				 		"<input type='text' name='tel' value='<%= tel.val %>' data-validate-type='notEmpty'/>"+
 				 	"</div>"+
 				 	"<div class='ws-field'>"+
 				 		"<input type='submit' value='Змінити' />"+
@@ -114,8 +114,8 @@ var templates = {
 					"<span data-name='amount' data-val='<%=amount%>' data-label='Сума'><%=amount%></span>"+
 				"</td>"+
 				"<td class='tableActions'>"+
-					"<a href='#' class='dialogData' dialog-template='editProductInCheck' prodid='<%= _id %>'>Змінити</a>"+
-					"<input type='button' id='Del' name='<%=title%>' value='Видалити'>"+
+					"<a href='#' class='edit dialogData' dialog-template='editProductInCheck' prodid='<%= _id %>'>Змінити</a>"+
+					"<input type='button' class='delCheckListItem del' name='<%=title%>' value='Видалити'>"+
 				"</td>"+
 			"</tr>"
 	),
@@ -156,7 +156,7 @@ var templates = {
 					"</div>"+
 					"<div class='ws-field'>"+
 						"<label><%= qty.label %></label>"+
-						"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='availQty floatNumb' data-prev-val='<%= qty.val %>' data-max-qty='<%= maxQty.val %>' />"+
+						"<input type='text' name='qty' value='<%= qty.val %>' data-validate-type='floatNumb availQty' data-prev-val='<%= qty.val %>' data-max-qty='<%= maxQty.val %>' />"+
 					"</div>"+
 					"<div class='ws-field'>"+
 						"<label><%= unit.label %></label>"+
@@ -192,7 +192,7 @@ var templates = {
 				"<input type='hidden' name='_id' value='<%= lineId %>'/>"+
 				"<div class='ws-field'>"+
 					"<label><%= title.label %></label>"+
-					"<input type='text' name='title' value='<%= title.val %>'/>"+
+					"<input type='text' name='title' value='<%= title.val %>' data-validate-type='notEmpty'/>"+
 				"</div>"+
 				"<div class='ws-field'>"+
 					"<label><%= qty.label %></label>"+

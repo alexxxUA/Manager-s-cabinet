@@ -27,7 +27,7 @@ block admin
                         div.pass
                              span(data-name='password', data-val=user.password, data-label='Пароль')=user.password
                         div.showHidePass.hidePass
-                    td.adminActions
+                    td.actionBtns
                         a(href='#', class='edit dialogData', dialog-template='editUser') Змінити
                         form(action='/removeUser/#{user._id}', ajax='true', ajax-success='removeLineItem')
                             input(type='submit', class='del', value='Видалити')

@@ -66,11 +66,6 @@ function getYOffset() {
 	return pageY;
 }
 
-//Function fadeOut error msgs
-function fadeoutErrMsgs(){
-	$('#searchProdErrorQty, #searchProdErrorExist, #searchProdErrorQty2, #searchProdErrorExistInCheck').fadeOut(200);
-}
-
 //Forgot password
 function sendDataForgotPass(data){
 	$('#loading').css('display', 'block');
@@ -267,7 +262,6 @@ function searchProd(e){
 			url: "/search",
 			data: data,
 			success: function(request) {
-				fadeoutErrMsgs();
 				$('#searchResults').find('li').remove();
 				if(request.length !== 0){
 					Dialog.showModal();
@@ -341,7 +335,6 @@ $('#searchProdQty').on('keyup', function(e){
 	if(regexpFloatNumber.test(saleProdQty)){
 		var saleSumm = floorN(saleProdQty*saleProdPrice, 2);
 		$('#searchProdSumm').val(saleSumm);
-		fadeoutErrMsgs();
 	}
 });
 
@@ -551,27 +544,34 @@ var Dialog = {
 
 		data.lineId = lineId;
 		
-		this.show(templates[templateName](data), {y: yPos, x: xPos});		
+		this.show(templates[templateName](data), e);		
 	},
-	show: function(dialog, coords){
+	show: function(dialog, event){
 		var $dialog = $(dialog),
-			offsetTop = window.scrollY;
+			offsetTop = window.scrollY,
+			screenHeight = window.innerHeight,
+			pos = {};
 		
 		$dialog.css({'visibility': 'hidden', 'top': 0, 'left': 0});
 		this.showModal();
 		$(this.dialogCont).append($dialog);
 		
-		if(coords){
-			$dialog.css({'top': coords.y, 'left': coords.x});
+		
+		var dialogWidth = $dialog.outerWidth(),
+			dialogHeight = $dialog.outerHeight();		
+		
+		if(event){
+			pos.top = event.pageY-15;
+			pos.left = event.pageX - dialogWidth;
 		}
 		else{
-			$dialog.css({
-				'top': offsetTop+20,
-				'left': '50%',
-				'margin-left': -$dialog.width()/2
-			});			
+			pos.top = ((screenHeight-dialogHeight)/2)+offsetTop;
+			pos.left = '50%';
+			pos['margin-left'] = -$dialog.width()/2;		
 		}
-		$dialog.css({'visibility': 'visible'});		
+		pos.visibility = 'visible';
+		
+		$dialog.css(pos);		
 	},
 	hide: function(){
 		this.hideModal();
@@ -587,7 +587,9 @@ var Dialog = {
 
 var Validator = {
 	fieldClass: 'ws-field',
-	errorClass: 'data-error',	
+	errorClass: 'data-error',
+	errorMessageClass: 'error-message',
+	errorMessageTemplate: _.template('<div class="<%= errorMessageClass %>"><div class="arrow"></div><div class="error-message-content"><%= error %></div></div>'),
 	init: function(){
 		this.registerEvents();
 	},
@@ -615,6 +617,15 @@ var Validator = {
 			return $this.find(':selected').text() !== $this.find(':first').text() ? true : false;
 		}
 	},
+	errorMessages:{
+		numb: _.template('Значення повинне бути цілим числом.'),
+		floatNumb: _.template('Значення повинне бути числом.'),
+		notEmpty: _.template('Поле є обов‘язковим для заповнення.'),
+		email: _.template('Email повинен бути в форматі: aaa@aaa.aa .'),
+		availQty: _.template('Доступна кількість: <span class="availableQty"><%= availQty %></span>'),
+		ifAdded: _.template('Товар вже додано до чеку.'),
+		attrVal: _.template('Виберіть будь-ласка товар з пошукового результату.')
+	},
 	validate: function(e){
 		var obj = this,
 			$this = $(e.currentTarget);
@@ -625,10 +636,10 @@ var Validator = {
 				availQty: +$this.attr('data-max-qty'),
 				attrVal: $this.attr('data-val'),
 				_id: $this.attr('data-id')	
-			},
-			isValidBase = true;
+			};
 			
-		
+		obj.hideAllErrors(e);
+
 		if(data.validatorType.length){
 			for(var i=0; i < data.validatorType.length; i++){
 				var isValid = true;
@@ -649,19 +660,23 @@ var Validator = {
 					console.log('Validator rule exist');
 				}
 				
-				if(isValid == true)
-					obj.hideError(e, data.validatorType[i]);					
-				else{
-					obj.showError(e, data.validatorType[i]);
-					isValidBase = false;
+				if(isValid == false){
+					obj.showError(e, data, data.validatorType[i]);
+					obj.showBaseError(e);
+					break;
 				}
 			}
-		}
+		}			
+	},
+	showErrorMessage: function(e, data, validatorType){
+		var targetWidth = $(e.currentTarget).outerWidth(),
+			$closestField = $(e.currentTarget).closest('.'+ this.fieldClass),
+			message = this.errorMessages[validatorType](data),
+			$message = $(this.errorMessageTemplate({errorMessageClass: this.errorMessageClass, error: message}));
 		
-		if(isValidBase == true)
-			obj.hideBaseError(e);
-		else
-			obj.showBaseError(e);
+		$message.css({'max-width': targetWidth});
+		$closestField.append($message);
+		$message.css({bottom: -$message.outerHeight(), visibility: 'visible'});
 	},
 	showBaseError: function(e){
 		var $this = $(e.currentTarget);
@@ -671,13 +686,19 @@ var Validator = {
 		var $this = $(e.currentTarget);
 		$this.closest('.'+ this.fieldClass).removeClass(this.errorClass);
 	},
-	showError: function(e, validatorType){
+	showError: function(e, data, validatorType){
 		var $this = $(e.currentTarget);
 		$this.closest('.'+ this.fieldClass).addClass(this.errorClass +'-'+validatorType);
+		this.showErrorMessage(e, data, validatorType);
 	},
-	hideError: function(e, validatorType){
-		var $this = $(e.currentTarget);
-		$this.closest('.'+ this.fieldClass).removeClass(this.errorClass +'-'+validatorType);
+	hideAllErrors: function(e){
+		var $this = $(e.currentTarget),
+			$closestField = $this.closest('.'+ this.fieldClass);
+		$closestField.removeClass(function(index, css){
+			return ( css.match(/data-error.*[!' ']/g) || []).join(' ');
+		});
+		$closestField.find('.'+ this.errorMessageClass).remove();
+		this.hideBaseError(e);
 	},
 	removeAllErrorClasses: function($context){
 		$context.find(':regex(class, data-error.*)').removeClass(function(index, css){
@@ -767,6 +788,7 @@ function prodAdded(request, $form){
 	if(request.error && request.error.length > 0){
 		//Error.show(request.error);
 	}else{
+		$form.find('.ws-field input').val('');
 		request.amount = request.price*request.qty;
 		$prodTable.prepend( templates.addedProductListItem( setFlorNumbers(request) ) );
 	}
@@ -808,7 +830,6 @@ function addProdToSalesList(xhr, opts, $form){
 	$form.find(':focus').blur();
 	$form.find('[type="text"]').val('');
 	Validator.removeAllErrorClasses($form);
-	$('#searchProd').focus();
 	$formClienField.attr('disabled', 'disabled');
 	
 	//Render check list
@@ -990,4 +1011,13 @@ $(document).delegate('[name="clientId"]', 'change', function(){
 $(document).delegate('.checkForm', 'submit', function(e){
 	e.preventDefault();
 	saleCheck(e);
+});
+
+$(document).delegate('.delCheckListItem', 'click', function(e){
+	var $this = $(e.currentTarget),
+		$lineItem = $this.closest('.d-line-item');
+	
+	$lineItem.remove();
+	if(!$this.closest('table').find('tr').length)
+		$('#checkList').slideUp();
 });

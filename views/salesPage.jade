@@ -18,12 +18,6 @@ block home
 				a(href='/clients', class='clientLink') База клієнтів
 			li(class='active')
 				a(href='/salesPage', class='salesLink') Продаж
-				a(href='#', class='settings') Налаштування
-				#salesSettings(style='display:none')
-					#closeBtn close
-					h2 Налаштування сторінки продажу
-					#settingsContainer
-						a(href='#', class='clearSalesList') Очистити базу продажу
 			li
 				a(href='/report', class='reportLink') Генерація звіту
 
@@ -55,7 +49,7 @@ block products
 									div#searchResults(style='display:none')
 										ul
 								td.ws-field
-									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off", data-validate-type='availQty')
+									input(type='text', name='qty', placeholder='Кількість', id='searchProdQty', autocomplete="off", data-validate-type='floatNumb availQty')
 									input(type='hidden', name='maxQty', id='searchProdMaxQty')
 								td.ws-field
 									input(type='text', name='unit', placeholder='Одиниця Вимірювання', id='searchProdUnit', disabled='disabled')
@@ -64,31 +58,13 @@ block products
 								td.ws-field
 									input(type='text', name='amount', placeholder='Сумма', id='searchProdSumm', disabled='disabled')
 					input(type='submit', value='+Чек')
-				
-				div.helpMessages
-					#searchProdErrorExist
-						span(class="errorArrow")
-						div#text Товар не існує
-					#searchProdErrorExistInCheck
-						span(class="errorArrow")
-						div#text Товар вже додано до чеку
-					#searchProdErrorQty
-						span(class="errorArrow")
-						div#text
-							span В наявності є тільки
-							span(class='availableCount')
-					#searchProdErrorQty2
-						span(class="errorArrow")
-						div#text Введіть кількість
-			
-
 			div#salesList
 				#checkList(style='display:none')
 					form.checkForm(action='/saleCheck')
 						input.btnSell(type='submit', title='ctr+enter', value='Продати')
 						div.d-line-item
 							h2.client(data-name='clientId', data-val='')
-						h2.tableTitle Чек
+						h2.tableMainTitle Чек
 						table#tableListCheck.prodTable
 							thead
 								tr
@@ -105,5 +81,5 @@ block products
 				
 				-var salling = 0;
 
-				h2(class="tableTitle") Список реалізованих чеків станом на сьогодні
+				h2.tableMainTitle Список реалізованих чеків станом на сьогодні
 				include checkList

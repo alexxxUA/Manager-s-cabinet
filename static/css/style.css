@@ -110,6 +110,7 @@ body{
 	font-family:'gost_type_bstandard', sans-serif;
 	height: 100%;
 	font-size: 14px;
+	min-height: 100%;
 }
 .data-error input[name],
 .data-error select[name],
@@ -255,7 +256,6 @@ select{
 }
 #addProducForm,
 .addClientWrap{
-	overflow: hidden;
 	border: 1px dashed #0BFFF5;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -294,6 +294,13 @@ select{
 }
 #addProducForm input[type="text"]{
 	width: 155px;
+	float: none;
+}
+#addProducForm .ws-field,
+#addProducForm input[type="submit"]{
+	display: inline-block;
+	vertical-align: top;
+	float: none;
 }
 #addProducForm select{
 	width: 60px;
@@ -418,12 +425,17 @@ td#tableThCoast,
 #tableActions{
 	text-align:center;
 }
+.actionBtns,
+.tableActions{
+	font-size: 0;
+}
 body .edit,
 body .del{
 	width: 20px;
 	height: 20px;
 	border: 0;
-	float: left;
+	float: none;
+	display: inline-block;
 	margin: 5px;
 	padding: 0;
 	cursor:pointer;
@@ -431,6 +443,12 @@ body .del{
 	background-image:url(../img/sprite.png);
 	background-repeat:no-repeat;
 	background-color:transparent;
+	vertical-align: middle;
+}
+.actionBtns form,
+.tableActions form{
+	display: inline-block;
+	vertical-align: middle;
 }
 .actionBtns{
 	min-width: 22%;
@@ -686,17 +704,6 @@ form .error,
 #searchProdErrorQty{
 	left: 215px;
 }
-#searchProdErrorExist,
-#searchProdErrorExistInCheck,
-#searchProdErrorQty,
-#searchProdErrorQty2{
-	top: 62px;
-	color: #FF6F6F;
-	position: absolute;
-	font-size: 12px;
-	display: none;
-	text-align: center;
-}
 #searchProdErrorQty #text,
 #searchProdErrorQty2 #text{width: 65px;}
 #searchProdErrorExist #text,
@@ -713,13 +720,6 @@ form .error,
 #searchProdErrorExistInCheck div,
 #searchProdErrorQty div,
 #searchProdErrorQty2 div{position: relative;}
-.errorArrow{
-	border-top: 0;
-	border-bottom: 10px solid #242429;
-	border-left: 10px solid transparent;
-	border-right: 10px solid transparent;
-	display: inline-block;
-}
 /*End Date picker*/
 #scrollTop{
 	position: fixed;
@@ -731,7 +731,7 @@ form .error,
 	margin: 0 500px 0 0;
 	background: url('../img/ToTop.png') no-repeat;
 }
-.tableTitle{
+.tableMainTitle{
 	text-align: center;
 	text-transform: uppercase;
 	padding: 10px 0;
@@ -739,7 +739,7 @@ form .error,
 	border-width: 1px 1px 0 1px;
 	border-radius: 5px 5px 0 0;
 }
-#getReport .tableTitle{
+#getReport .tableMainTitle{
 	padding: 0 0 10px 0;
 	border:none;
 }
@@ -1030,7 +1030,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .align-right,
 .totalText{
-	text-align: right;
+	text-align: right !important;
 }
 .checkDetailsContainer{
 	width: 500px;
@@ -1043,6 +1043,43 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .checkProdList th,
 .checkProdList td,
-.checkProdList .tableTitle{
+.checkProdList .tableMainTitle{
 	border-color: #E0FF00;
+}
+.tableActions,
+.checkForm td,
+.prodTable td{
+	text-align: center;
+	vertical-align: middle;
+}
+.error-message{
+	bottom: 0px;
+	color: #FF6F6F;
+	position: absolute;
+	font-size: 12px;
+	text-align: center;
+	background: #1A1C35;
+	border-radius: 10px;
+	visibility: hidden;
+	margin-bottom: -12px;
+}
+.error-message-content{
+	padding: 9px;	
+}
+.error-message .arrow{
+	border-top: 0;
+	border-bottom: 10px solid #1A1C35;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	display: inline-block;
+	position: absolute;
+	left: 50%;
+	margin-left: -10px;
+	top: -10px;
+}
+.error-message .availableQty{
+	color: #5CFF5C;
+}
+.data-error{
+	position: relative;
 }

@@ -103,12 +103,6 @@ var T = {
 	}
 }
 
-//Check if user logged in
-function isLoggedIn(userID, res){
-	if(typeof userID == 'undefined')
-		res.redirect('/');
-}
-
 //set path to the views (template) directory
 app.set('views', __dirname + '/views');
 
@@ -261,7 +255,10 @@ app.get('/admin', function(req, res){
 
 //Home page
 app.get('/editUser/:id', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var dbQuery = {
 			_id: ObjectID(req.params.id)
@@ -281,7 +278,10 @@ app.get('/editUser/:id', function(req, res){
 
 //Dell user from database
 app.get('/removeUser/:id', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	MD.users.remove({_id: ObjectID(req.params.id)}, function(err, result){
 		res.send();		
@@ -290,7 +290,10 @@ app.get('/removeUser/:id', function(req, res){
 
 //Home page
 app.get('/home', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 	
 	MD.users.findOne({_id : ObjectID(req.cookies.userID)}, function(err, result){
 		var userLogin = result.login;
@@ -305,7 +308,10 @@ app.get('/home', function(req, res){
 
 //Add product
 app.get('/addProduct', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var resDAta = {};
 
@@ -331,7 +337,10 @@ app.get('/addProduct', function(req, res){
 
 //Dell product from database
 app.get('/removeProd/:id', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	MD.products.remove({userID: req.cookies.userID, _id: ObjectID(req.params.id)}, function(err, result){
 		res.send();		
@@ -340,7 +349,10 @@ app.get('/removeProd/:id', function(req, res){
 
 //Edit prod
 app.get('/editProd/:id', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var userID = req.cookies.userID,
 		prodID = req.params.id,
@@ -358,7 +370,10 @@ app.get('/editProd/:id', function(req, res){
 
 //Sales list
 app.get('/salesPage', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var MILISEC = +(req.cookies.mSeconds),
 		timeZone = req.cookies.timeZone,
@@ -383,7 +398,10 @@ app.get('/salesPage', function(req, res){
 
 //Live search
 app.get('/search', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	MD.products.find({title : {$regex: req.query.saerchName, $options:'i'}, userID : req.cookies.userID}).toArray(function(err, results){
 		res.send(results);
@@ -392,7 +410,10 @@ app.get('/search', function(req, res){
 
 //Add product to sales list
 app.get('/saleCheck', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var timeZone = req.cookies.timeZone,
 		curTime = +T.getTimeWithOffset(timeZone),
@@ -448,7 +469,10 @@ app.get('/saleCheck', function(req, res){
 
 //Show check
 app.get('/showCheck/:id', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var userID = req.cookies.userID,
 		checkId = req.params.id;
@@ -460,7 +484,10 @@ app.get('/showCheck/:id', function(req, res){
 
 //Report page
 app.get('/report', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var userID = req.cookies.userID,
 		renderData = {
@@ -477,7 +504,10 @@ app.get('/report', function(req, res){
 
 //Get report
 app.get('/getReport', function(req, res){
-	isLoggedIn(req.cookies.userID, res);
+	if(typeof req.cookies.userID == 'undefined'){
+		res.redirect('/');
+		return false;		
+	}
 
 	var clientID = req.query.clientId.length > 0 ? '' : req.query.clientId,
 		reportType = req.query.reportType,
@@ -529,19 +559,6 @@ app.get('/getReport', function(req, res){
 			});
 			break;
 	}
-	//console.log('Start: '+ rangeTime.start +';  End: '+ rangeTime.end +'\n-----------------------------------------');
-});
-
-
-app.get('/clearSalesList', function(req, res){
-	MD.salesList.remove({userID : req.cookies.userID}, function(err, result){
-		if(!err){
-			res.send('success');
-		}
-		else{
-			res.send('error');
-		}
-	});
 });
 
 //Clients page
