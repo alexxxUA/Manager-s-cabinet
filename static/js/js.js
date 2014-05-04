@@ -803,7 +803,7 @@ function prodEdited(request, $form){
 }
 
 function setFlorNumbers(object){
-	var roundNames = 'qty price amount';
+	var roundNames = 'qty price amount totalAmount';
 
 	for(var key in object){
 		var regExp = new RegExp(key, 'i');
@@ -1014,9 +1014,23 @@ $(document).delegate('.checkForm', 'submit', function(e){
 
 $(document).delegate('.delCheckListItem', 'click', function(e){
 	var $this = $(e.currentTarget),
-		$lineItem = $this.closest('.d-line-item');
+		tableItemsLength = $this.closest('table').find('.d-line-item').length,
+		$lineItem = $this.closest('.d-line-item'),
+		$checkListCont = $('#checkList');
 	
 	$lineItem.remove();
-	if(!$this.closest('table').find('tr').length)
-		$('#checkList').slideUp();
+	if(tableItemsLength <= 1){
+		$('.sClienList select').removeAttr('disabled');
+		$checkListCont.slideUp();
+		$checkListCont.find('.totalAmount').html('');
+	}		
+});
+
+//Clear DOM element
+$(document).delegate('.clearDomElement', 'click', function(e){
+	var $this = $(this),
+		sourceSelector = $this.attr('data-clear-selector'),
+		$sourceEl = $(sourceSelector);
+	
+	$sourceEl.html('');
 });

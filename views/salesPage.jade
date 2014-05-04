@@ -62,7 +62,8 @@ block products
 				#checkList(style='display:none')
 					form.checkForm(action='/saleCheck')
 						input.btnSell(type='submit', title='ctr+enter', value='Продати')
-						div.d-line-item
+						div.d-line-item.clientName
+							h2 Клієнт:  
 							h2.client(data-name='clientId', data-val='')
 						h2.tableMainTitle Чек
 						table#tableListCheck.prodTable

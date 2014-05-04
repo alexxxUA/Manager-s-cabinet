@@ -52,7 +52,7 @@ block mainContent
 							option(value='salesStatistic') Статистика продажу
 					div.d-line-item
 						input.generateReport(type='submit', value='Згенерувати')
-					a#clearReportResults.del(href="#", title="Очистити") Очистити
+					a#clearReportResults.del.clearDomElement(href="#", title="Очистити", data-clear-selector='.reportResults') Очистити
 					a(id="print", href="javascript:window.print();", title="Печать") Печать
 			div.reportResults
 			div#errorReport

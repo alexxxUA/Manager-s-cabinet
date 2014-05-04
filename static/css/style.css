@@ -260,9 +260,6 @@ select{
 	padding: 10px;
 	margin-bottom: 20px;
 }
-.usersTable{
-	margin: 20px 0;
-}
 .usersTable .userPass{
 	position: relative;
 }
@@ -1095,4 +1092,13 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	height: 50px;
 	line-height: 50px;
 	font-size: 20px;
+}
+td.tableTitle{
+	text-align: left;
+}
+.clientName{
+	margin: 5px 0;
+}
+.clientName h2{
+	display: inline-block;
 }

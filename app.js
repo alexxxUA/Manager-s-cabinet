@@ -42,6 +42,21 @@ var mongourl = generate_mongo_url(mongo),
 	ObjectID = require('mongodb').ObjectID,
 	userID = '';
 
+/* Connect mongoDB and log that srver started */
+console.log(mongourl);
+MongoClient.connect(mongourl, function(err, database) {
+	if(err) throw err; 
+	
+	MD.db = database;
+	MD.users = MD.db.collection('users');
+	MD.products = MD.db.collection('products');
+	MD.salesList = MD.db.collection('salesList');
+	MD.clients = MD.db.collection('clients');
+ 	
+	//listen on localhost 8888
+ 	console.log('Server started on port: '+ port);
+	app.listen(port);
+});
 
 var T = {
 	months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -676,19 +691,4 @@ app.get('*', function(req, res){
 			res.redirect('/error404');
 		}
     });
-});
-
-/* Connect mongoDB and log that srver started */
-MongoClient.connect(mongourl, function(err, database) {
-	if(err) throw err; 
-	
-	MD.db = database;
-	MD.users = MD.db.collection('users');
-	MD.products = MD.db.collection('products');
-	MD.salesList = MD.db.collection('salesList');
-	MD.clients = MD.db.collection('clients');
- 	
-	//listen on localhost 8888
- 	console.log('Server started on port: '+ port);
-	app.listen(port);
 });
