@@ -1090,3 +1090,9 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	right: 15px;
 	top: 15px;
 }
+#searchProdList input[type="submit"]{
+	margin: 15px 0 0 5px;
+	height: 50px;
+	line-height: 50px;
+	font-size: 20px;
+}
