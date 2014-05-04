@@ -48,9 +48,8 @@ block mainContent
 					div.d-line-item
 						label Тип отриманих даних
 						select(name='reportType', value='popularProduct')
-							option(value='popularProduct') Найпопулярныший товар
-							option(value='salesStatistic', selected='selected') Статистика продажу
-							option(value='salesChecks') Реалізовані чеки
+							option(value='salesChecks', selected='selected') Реалізовані чеки
+							option(value='salesStatistic') Статистика продажу
 					div.d-line-item
 						input.generateReport(type='submit', value='Згенерувати')
 					a#clearReportResults.del(href="#", title="Очистити") Очистити

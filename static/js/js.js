@@ -181,7 +181,6 @@ $(document).on('keyup', function(e){
 		logout();
 	}
 });
-$('#salesListGroup #searchProd').focus();
 
 //Logout
 $('#logout').on('click', function(e){

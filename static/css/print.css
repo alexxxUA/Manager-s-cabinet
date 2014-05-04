@@ -1,4 +1,4 @@
-body,html, a{
+body,html, a, th, td, span, h1, h2, h3{
 	color:#000 !important;
 	font-family: arial !important;
 	height: auto;
@@ -35,6 +35,10 @@ h3{
 #footer,
 #getReportForm h3 span{
 	display: none;
+}
+th.tableTitle,
+td.tableTitle{
+	display: table-cell;
 }
 #section-container{
 	width: auto !important;

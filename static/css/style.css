@@ -690,6 +690,7 @@ form .error,
 .salesLink{background-position:left -44px;}
 .adminLink{background-position: left -66px;}
 .reportLink{background-position:left -89px;}
+.clientLink{background-position: -2px -253px;}
 #editProductWraper{
 	clear:both;
 }
@@ -1034,6 +1035,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .checkDetailsContainer{
 	width: 500px;
+	position: relative;
 }
 .checkDetails{
 	font-size: 15px;
@@ -1082,4 +1084,9 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .data-error{
 	position: relative;
+}
+.checkDetailsContainer #print{
+	position: absolute;
+	right: 15px;
+	top: 15px;
 }
