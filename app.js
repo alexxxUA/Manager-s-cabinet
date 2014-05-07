@@ -25,6 +25,7 @@ app.configure('production', function(){
     var env = JSON.parse(process.env.VCAP_SERVICES);
     mongo = env['mongodb-1.8'][0]['credentials'];
 });
+
 var generate_mongo_url = function(obj){
     obj.hostname = (obj.hostname || 'localhost');
     obj.port = (obj.port || 27017);
@@ -36,27 +37,10 @@ var generate_mongo_url = function(obj){
     }
 }
 
-
 var mongourl = generate_mongo_url(mongo),
 	MD = {}, //Databases connected at the end of server's code
 	ObjectID = require('mongodb').ObjectID,
 	userID = '';
-
-/* Connect mongoDB and log that srver started */
-console.log(mongourl);
-MongoClient.connect(mongourl, function(err, database) {
-	if(err) throw err; 
-	
-	MD.db = database;
-	MD.users = MD.db.collection('users');
-	MD.products = MD.db.collection('products');
-	MD.salesList = MD.db.collection('salesList');
-	MD.clients = MD.db.collection('clients');
- 	
-	//listen on localhost 8888
- 	console.log('Server started on port: '+ port);
-	app.listen(port);
-});
 
 var T = {
 	months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -309,8 +293,9 @@ app.get('/home', function(req, res){
 		res.redirect('/');
 		return false;		
 	}
-	
+	//console.log(req.cookies.userID);
 	MD.users.findOne({_id : ObjectID(req.cookies.userID)}, function(err, result){
+		//console.log(result);
 		var userLogin = result.login;
 		res.cookie('login', result.login, { path: '/', expires: new Date(Date.now() + 900000000), httpOnly: true });
 
@@ -691,4 +676,19 @@ app.get('*', function(req, res){
 			res.redirect('/error404');
 		}
     });
+});
+
+/* Connect mongoDB and log that srver started */
+MongoClient.connect(mongourl, function(err, database) {
+	if(err) throw err; 
+	
+	MD.db = database;
+	MD.users = MD.db.collection('users');
+	MD.products = MD.db.collection('products');
+	MD.salesList = MD.db.collection('salesList');
+	MD.clients = MD.db.collection('clients');
+ 	
+	//listen on localhost 8888
+ 	console.log('Server started on port: '+ port);
+	app.listen(port);
 });
