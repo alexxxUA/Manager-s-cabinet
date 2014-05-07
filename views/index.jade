@@ -1,7 +1,7 @@
 ﻿extends layout
-block forgotPass
-	#forgotPassPoup(style="display:none")
-		#closeBtn close
+block staticDialogs
+	div.dialog.static#forgotPassPoup
+		div.closeBtn close
 		h2 Відновлення пароля
 		#forgotInputWraper
 			input(type='text', name='forgotEmail', id='forgotEmail', placeholder='Введіть email')

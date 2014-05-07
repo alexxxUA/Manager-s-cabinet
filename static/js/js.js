@@ -493,8 +493,11 @@ var regexp = {
 };
 
 var Dialog = {
-	modalBg: '#modalWindow',
-	dialogCont: '.modals',
+	modalBg: '.modal',
+	modalActiveClass: 'active',
+	dialogCont: '.dialogs-container',
+	dialogSelector: '.dialog',
+	dialogStaticSelector: '.static',
 	closeBtn: '.closeBtn',
 	dialogDataLink: '.dialogData',
 	init: function(){
@@ -535,7 +538,6 @@ var Dialog = {
 		var $this = $(e.currentTarget),
 			yPos = e.pageY-15,
 			xPos = e.pageX,
-			$modals = $('#modals'),
 			$editLine = $this.closest('.d-line-item'),
 			templateName = $this.attr('dialog-template'),
 			lineId = $editLine.attr('id'),
@@ -549,7 +551,7 @@ var Dialog = {
 		var $dialog = $(dialog),
 			offsetTop = window.scrollY,
 			screenHeight = window.innerHeight,
-			pos = {};
+			styles = {};
 		
 		$dialog.css({'visibility': 'hidden', 'top': 0, 'left': 0});
 		this.showModal();
@@ -560,27 +562,33 @@ var Dialog = {
 			dialogHeight = $dialog.outerHeight();		
 		
 		if(event){
-			pos.top = event.pageY-15;
-			pos.left = event.pageX - dialogWidth;
+			styles.top = event.pageY-15;
+			styles.left = event.pageX - dialogWidth;
 		}
 		else{
-			pos.top = ((screenHeight-dialogHeight)/2)+offsetTop;
-			pos.left = '50%';
-			pos['margin-left'] = -$dialog.width()/2;		
+			styles.top = ((screenHeight-dialogHeight)/2)+offsetTop;
+			styles.left = '50%';
+			styles['margin-left'] = -$dialog.width()/2;		
 		}
-		pos.visibility = 'visible';
+		styles.visibility = 'visible';
+		styles.display = 'block';
 		
-		$dialog.css(pos);		
+		$dialog.css(styles);		
 	},
 	hide: function(){
 		this.hideModal();
-		$(this.dialogCont).text('');
+		//Hide dialogs
+		$(this.dialogCont).find(this.dialogSelector).hide();
+		
+		//Remove static dialogs
+		$(this.dialogCont).find(this.dialogSelector).not(this.dialogStaticSelector).remove();
+
 	},
 	showModal: function(){
-		$(this.modalBg).css({'top': '0', 'left': '0'}).show();
+		$(this.modalBg).addClass(this.modalActiveClass);
 	},
 	hideModal: function(){
-		$(this.modalBg).hide().css({'top': '-100%', 'left': '-100%'});
+		$(this.modalBg).removeClass(this.modalActiveClass);
 	}
 }
 

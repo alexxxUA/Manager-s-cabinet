@@ -42,10 +42,9 @@ html
 				h4 Developed by : Alexey Vasin
 				a(href="mailto:product.db.helper@gmail.com", class="mailContact") Підтримка
 				h5 product.db.helper@gmail.com
-		block popupEdit
-		block forgotPass
-		div(class='modals')
-		#modalWindow
+		div.modal
+		div.dialogs-container
+			block staticDialogs
 		a(id="scrollTop", href="#", title="To top", style="display:none") To top
 		#loading(style="display:none;")
 			img(src="/img/ajax-loader1.gif", width="32", height="32", alt="loader")

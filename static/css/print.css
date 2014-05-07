@@ -133,7 +133,7 @@ body *:hover{
 	color: #000!important;
 	text-decoration: none!important;
 }
-#modalWindow{
+.modal{
 	background:#fff!important;
 	opacity: 1;
 	top: 55px!important;
