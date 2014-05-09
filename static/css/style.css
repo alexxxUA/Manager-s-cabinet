@@ -1108,3 +1108,12 @@ td.tableTitle{
 .clientName h2{
 	display: inline-block;
 }
+.check-line{
+	cursor: pointer;
+}
+.check-details{
+	display:none;
+}
+.active-check-details{
+	display: table-row;
+}

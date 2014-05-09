@@ -1006,6 +1006,12 @@ Validator.init();
 /*-------------------- DELEGATES ------------------------*/
 /*-------------------------------------------------------*/
 
+//Show check details in check list
+$(document).delegate('.check-line', 'click', function(){
+	$(this).next('.check-details').toggleClass('active-check-details');
+});
+
+
 //Set full name into sibling hidden input
 $(document).delegate('[name="clientId"]', 'change', function(){
 	var $this = $(this),

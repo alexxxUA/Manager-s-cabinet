@@ -1,0 +1,38 @@
+include jadeFunctions
+table(class='salesTableList soldCheckList')
+	thead
+		tr
+			th.cNumb № чеку
+			th.cClient Покупець
+			th.cDate Дата
+			th.cAmount Сума
+	tbody
+		-var totalAmount = 0;
+		each check in salesList
+			-totalAmount += +check.totalAmount;
+			tr.check-line(id=check._id)
+				td.cNumb=check.checkNumb
+				td.cClient=check.clientFullName
+				td.cDate=getFormatedDate(check.date)
+				td.cAmount=floorN(check.totalAmount, 2)
+			tr.check-details
+				td(colspan='4')
+					table.prodTable.salesTableList
+						thead
+							tr
+								th.tableTitle Назва товару
+								th.tableQty Кількість
+								th.tableUnit Одиниця виміру
+								th.tablePrice Ціна
+								th.tableCoast Сумма
+						tbody
+							each prod in check.prodList
+								tr.t-field
+									td.tableTitle=prod.title
+									td.tableQty=floorN(prod.qty, 2)
+									td.tableUnit=prod.unit
+									td.tablePrice=floorN(prod.price, 2)
+									td.tableCoast=floorN(prod.amount, 2)
+		tr.tableAmount
+			td.totalText(colspan='3') Загальна сума: 
+			td.totalAmount=floorN(totalAmount, 2)
