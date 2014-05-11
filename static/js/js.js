@@ -127,7 +127,7 @@ function selectSearched(){
 		searchChosenId = $('#searchResults .selected').attr('data-id');
 	
 	$('#searchResults').css('display', 'none');
-	$('#searchProd').val(searchChosenTitle).attr({'data-val': searchChosenTitle, 'data-id': searchChosenId});
+	$('#searchProd').val(searchChosenTitle).attr({'data-val': searchChosenTitle, 'data-id': searchChosenId}).trigger('blur');
 	$('#searchProdPrice').val(floorN(searchChosenPrice, 2));
 	$('#searchProdUnit').val(searchChosenUnit);
 	$('#searchProdId').val(searchChosenId);
@@ -253,8 +253,9 @@ $('#loginForm').on('submit', function(e){
 function searchProd(e){
 	if(e.keyCode !== 38 && e.keyCode !== 40 && e.keyCode !== 13 && e.keyCode !== 39 && e.keyCode !== 37 && e.keyCode !== 17){
 		searchItem = 1;
-		var data = {};
-		data.saerchName = $('#searchProd').val();
+		var data = {},
+			$this = $(e.currentTarget);
+		data.saerchName = $this.val();
 
 		$.ajax({
 			type: "GET",
@@ -583,6 +584,8 @@ var Dialog = {
 		//Remove static dialogs
 		$(this.dialogCont).find(this.dialogSelector).not(this.dialogStaticSelector).remove();
 
+		//Remove search results
+		$('#searchResults ul').html('');
 	},
 	showModal: function(){
 		$(this.modalBg).addClass(this.modalActiveClass);
@@ -645,7 +648,7 @@ var Validator = {
 				_id: $this.attr('data-id')	
 			};
 			
-		obj.hideAllErrors(e);
+		obj.hideFieldErrors(e);
 
 		if(data.validatorType.length){
 			for(var i=0; i < data.validatorType.length; i++){
@@ -698,19 +701,20 @@ var Validator = {
 		$this.closest('.'+ this.fieldClass).addClass(this.errorClass +'-'+validatorType);
 		this.showErrorMessage(e, data, validatorType);
 	},
-	hideAllErrors: function(e){
+	hideFieldErrors: function(e){
 		var $this = $(e.currentTarget),
 			$closestField = $this.closest('.'+ this.fieldClass);
 		$closestField.removeClass(function(index, css){
-			return ( css.match(/data-error.*[!' ']/g) || []).join(' ');
+			return ( css.match(/data-error\S*/g) || []).join(' ');
 		});
 		$closestField.find('.'+ this.errorMessageClass).remove();
 		this.hideBaseError(e);
 	},
-	removeAllErrorClasses: function($context){
+	removeAllErrors: function($context){
 		$context.find(':regex(class, data-error.*)').removeClass(function(index, css){
-			return ( css.match(/data-error.*[!' ']/g) || []).join(' ');
+			return ( css.match(/data-error\S*/g) || []).join(' ');
 		});
+		$context.find('.'+ this.errorMessageClass).remove();
 	}
 }
 
@@ -733,7 +737,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 				
 	var formErrors = $form.find(':regex(class, data-error.*)');
 	if(formErrors.length > 0){
-		console.log('Form errors.');
+		console.log('Detected form errors!!');
 		return false;
 	}
 
@@ -836,7 +840,7 @@ function addProdToSalesList(xhr, opts, $form){
 	//Reset 'Add form'
 	$form.find(':focus').blur();
 	$form.find('[type="text"]').val('');
-	Validator.removeAllErrorClasses($form);
+	Validator.removeAllErrors($form);
 	$formClienField.attr('disabled', 'disabled');
 	
 	//Render check list
@@ -935,7 +939,7 @@ function salesStatistic(request, $resContainer){
 	var salesList = request.salesList,
 		plotData = {
 			data: [
-				[salesList[0].date, salesList[0].totalAmount, getFormatedDate(salesList[0].date)]
+				[salesList[0].date, salesList[0].totalAmount]
 			]
 		},
 		plotConf = {
@@ -966,13 +970,50 @@ function salesStatistic(request, $resContainer){
 			plotData.data[curCheck][1] += salesList[i].totalAmount;
 		}
 		else{
-			plotData.data.push( [ salesList[i].date, salesList[i].totalAmount, getFormatedDate(salesList[i].date)] );
+			plotData.data.push( [ salesList[i].date, salesList[i].totalAmount] );
 			curCheck++;
 		}	
 	}
 	
 	$.plot($(".salesGraph"), [plotData], plotConf);
 }
+
+
+function productStatistic(request, $resContainer){
+	var salesList = request.salesList,
+		plotData = {
+			data: []
+		},
+		plotConf = {
+			series: {
+				lines:{ 
+					show: true,
+					lineWidth: 3
+				},
+				points:{
+					show: true
+				}
+			},
+			xaxis:{
+				color: '#FFF',
+				mode: "time",
+				minTickSize: [1, "day"],
+				timeformat: "%m/%d/%Y",
+			},
+			yaxis:{
+				color: '#FFF'
+			}
+		};
+		
+	//Form plotData
+	for(var i=0; i<salesList.length; i++){
+		plotData.data.push( [ salesList[i].date, salesList[i].prodList[0].qty ] );
+	}
+	
+	$.plot($(".salesGraph"), [plotData], plotConf);
+}
+
+
 
 //Inits
 Dialog.init();
@@ -1026,6 +1067,7 @@ $(document).delegate('.checkForm', 'submit', function(e){
 	saleCheck(e);
 });
 
+//Remove remove item from check
 $(document).delegate('.delCheckListItem', 'click', function(e){
 	var $this = $(e.currentTarget),
 		tableItemsLength = $this.closest('table').find('.d-line-item').length,
@@ -1047,4 +1089,19 @@ $(document).delegate('.clearDomElement', 'click', function(e){
 		$sourceEl = $(sourceSelector);
 	
 	$sourceEl.html('');
+});
+
+//Change report type
+$(document).delegate('[name="reportType"]', 'change', function(e){
+	var $this = $(this),
+		$closestForm = $this.closest('form'),
+		reportType = $this.val(),
+		$prodSelect = $this.siblings('.prodSelectCont');
+
+	Validator.removeAllErrors($closestForm);
+	
+	if(reportType == 'productStatistic')
+		$prodSelect.addClass('active ws-field');
+	else
+		$prodSelect.removeClass('active ws-field');
 });

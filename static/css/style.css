@@ -603,7 +603,6 @@ body .del{background-position: center -122px;}
 }
 #datepicker,
 #datepicker2{
-	margin: 0 10px 0 0;
 	width: 90px;
 	text-align: center;
 }
@@ -962,6 +961,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 .reportForm .d-line-item{
 	display: inline-block;
+	vertical-align: top;
 }
 .salesGraph{
 	height: 300px;
@@ -1105,15 +1105,34 @@ td.tableTitle{
 .clientName{
 	margin: 5px 0;
 }
-.clientName h2{
+.clientName h2,
+.prodSelectCont.active{
 	display: inline-block;
 }
 .check-line{
 	cursor: pointer;
 }
-.check-details{
+.check-details,
+.prodSelectCont{
 	display:none;
 }
 .active-check-details{
 	display: table-row;
+}
+.generateReport{
+	margin-top: 17px;
+}
+.prodSelectCont,
+.prodSelect{
+	width: 100%;
+}
+.prodSelectCont{
+	margin-top: 10px;
+}
+.reportForm .d-line-item input,
+.reportForm .d-line-item select{
+	margin-right: 0;
+}
+.reportForm .d-line-item{
+	margin-right: 10px;
 }

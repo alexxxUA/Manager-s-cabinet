@@ -533,8 +533,19 @@ app.get('/getReport', function(req, res){
 		dbQuery.clientID = req.query.clientId;
 
 	switch (reportType){
-		case 'popularProduct':
-			console.log('popularProduct');
+		case 'productStatistic':
+			dbQuery.prodList = { $elemMatch: {title: req.query.title} }
+
+			MD.salesList.find(dbQuery, {'prodList.$': 1, date: 1}).sort({date: 1}).toArray(function(err, results){
+				jade.renderFile('views/rProdStatistic.jade', {salesList: results, dFrom: rangeTime.start, dTill: rangeTime.end}, function(err, html){
+					if(err) throw err;
+					sendData.html = html;
+					sendData.callback = reportType;
+					sendData.salesList = results;
+					
+					res.send(sendData);
+				});
+			});
 			break;
 		case 'salesStatistic':
 			MD.salesList.find(dbQuery).sort({date: 1}).toArray(function(err, results){				
