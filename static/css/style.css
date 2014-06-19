@@ -107,7 +107,7 @@ html{
 }
 body{
 	color:#0BFFF5;
-	font-family:'gost_type_bstandard', sans-serif;
+	font-family: 'gost_type_bstandard', sans-serif;
 	height: 100%;
 	font-size: 14px;
 	min-height: 100%;
@@ -148,11 +148,10 @@ body{
 	border-radius: 0 40px 40px 0;
 }
 #header h1 a{
-	background: url('../img/shopping64x64.png') right center no-repeat;
-	padding: 20px 92px 20px 0;
+	background: url('../img/cart.png') right center no-repeat;
+	padding: 20px 75px 20px 0;
 	display: inline;
-	font: 35px 'baveuseregular';
-	text-transform: uppercase;
+	font: 42px 'gost_type_bstandard';
 	text-decoration: none;
 }
 .logout{

@@ -1,0 +1,22 @@
+|---------------------------------------------------|
+|-------------------- NODE JS ----------------------|
+|---------------------------------------------------|
+git clone ssh://5380a0894382ec8d510000ef@manager-mua.rhcloud.com/~/git/manager.git/
+cd manager/
+
+
+git add .
+git commit -m 'My changes'
+git push
+
+|---------------------------------------------------|
+|------------------- MONGO DB ----------------------|
+|---------------------------------------------------|
+
+MongoDB 2.4 database added.  Please make note of these credentials:
+
+   Root User:     admin
+   Root Password: hDwMtt5WKcRU
+   Database Name: manager
+
+Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/

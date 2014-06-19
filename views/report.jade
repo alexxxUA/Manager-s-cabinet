@@ -48,10 +48,10 @@ block mainContent
 					div.d-line-item
 						label Тип отриманих даних
 						select(name='reportType', value='popularProduct')
-							option(value='salesChecks') Реалізовані чеки
+							option(value='salesChecks', selected='selected') Реалізовані чеки
 							option(value='salesStatistic') Статистика продажу
-							option(value='productStatistic', selected='selected') Статистика товару
-						div.prodSelectCont.ws-field.active
+							option(value='productStatistic') Статистика товару
+						div.prodSelectCont.ws-field
 							input.prodSelect#searchProd(type='text', name='title', placeholder='Назва товару', autocomplete="off", data-validate-type='attrVal ifAdded')
 							#searchResults
 								ul
