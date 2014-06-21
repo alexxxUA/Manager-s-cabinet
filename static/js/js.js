@@ -1,10 +1,37 @@
 // Datepicker
+$.datepicker.regional['ru'] = {
+	closeText: 'Закрити',
+	prevText: '&#x3c;Попер',
+	nextText: 'Наступ&#x3e;',
+	currentText: 'Сьогодні',
+	monthNames: ['Січень','Лютий','Березень','Квітень','Травень','Червень',
+	'Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+	monthNamesShort: ['Січ','Лют','Бер','Квіт','Тран','Черв',
+	'Лип','Серп','Вер','Жовт','Лст','Грд'],
+	dayNames: ['неділя','понеділок','вівторок','середа','четверг','п"ятниця','субота'],
+	dayNamesShort: ['ндл','пнд','втр','срд','чтв','птн','сбт'],
+	dayNamesMin: ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'],
+	weekHeader: 'Не',
+	dateFormat: 'mm/dd/yy',
+	firstDay: 1,
+	isRTL: false,
+	showMonthAfterYear: false,
+	yearSuffix: ''};
+$.datepicker.setDefaults($.datepicker.regional['ru']);
+
 $("#datepicker").datepicker({
 	onSelect : setFocusInp
 });
 $("#datepicker2").datepicker({
 	onSelect : setFocusInp
 });
+$('[name="birthday"]').datepicker({
+	onSelect : setFocusInp
+});
+function setFocusInp(e){
+	this.focus();
+}
+
 //Table sorter
 $("#myTable table").tablesorter();
 //Placeholders
@@ -44,10 +71,6 @@ function setTimeCookie(){
 }
 setTimeCookie();
 
-//Focus on input report date
-function setFocusInp(){
-	$('#generateReport').focus();
-};
 //Flour number
 function floorN(x, n){
 	var numb = Number(x);
@@ -574,7 +597,10 @@ var Dialog = {
 		styles.visibility = 'visible';
 		styles.display = 'block';
 		
-		$dialog.css(styles);		
+		$dialog.css(styles);
+		$('[name="birthday"]').datepicker({
+			onSelect : setFocusInp
+		});
 	},
 	hide: function(){
 		this.hideModal();
