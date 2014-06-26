@@ -939,7 +939,7 @@ function saleCheck(e){
 			
 			//Render sold check list
 			$soldCheckList.find('tbody').prepend(templates.checkItem(setFlorNumbers(data)));
-			$soldCheckListTotalAmount.text( floorN(tableTotalAmount + data.totalAmount,2) );			
+			$soldCheckListTotalAmount.text( floorN( (tableTotalAmount + parseInt(data.totalAmount)),2) );			
 		},
 		error: function(err){
 			
